@@ -12,7 +12,7 @@ of the processing functions were optimzed for FragPipe search results.
 
 ## Installation
 
-You can install the development version of fragNterminomics like so:
+You can install the development version of fragNterminomics by:
 
 ``` r
 devtools::install_github("MiguelCos/fragNterminomics")
