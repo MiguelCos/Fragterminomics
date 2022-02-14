@@ -22,7 +22,7 @@ A data analysis approach for extracting information related to proteolytic activ
 
 ## Installation
 
-You can install the development version of fragNterminomics by typing:
+You can install the development version of fragNterminomics by:
 
 ``` r
 devtools::install_github("MiguelCos/fragNterminomics")
