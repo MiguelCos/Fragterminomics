@@ -799,6 +799,13 @@ The first step for analyzing semi-specific search results in terms of large scal
 
 We do that in the context of this data analysis approach with the `annotate_peptides` function.
 
+**Load the `annotate_peptides` function**
+
+
+```r
+source(here("R/annotate_peptides.R"))
+```
+
 We need to prepare the input data frame for the `annotate_peptides` function. Requirements: a data frame with at least 2 columns: `Genes`, with uniprot IDs and `Peptides`, with sequences of the identified peptides.
 
 First, let's check the data frame with the identified peptides.
@@ -849,6 +856,13 @@ if(!file.exists(here("report/outputs/cleavage_annoated_peptides_final.tsv"))){
 
 After annotating the peptides by their specificity, we want to evaluate the chemical modifications found at the N-term. In the context of this experimental design, we are able to use the TMT labelling at the N-term as a corroboration of the origin of the identified peptide as a proteolytic product.
 
+**Load `annotate_nterm` function**
+
+
+```r
+source(here("R/annotate_nterm.R"))
+```
+
 Merging table of specificity-labelled peptide with identifications table:
 
 
@@ -877,6 +891,11 @@ nterannot <- annotate_nterm(peptides_annotated,
 ## Summarize peptide counts per feature
 
 We will use the function `summarize_peptide_counts`, which will help us see to counts of identified peptides per interesting feature in terms of specificity and (bio)chemical modifications.
+
+
+```r
+source(here("R/summarize_peptide_counts.R"))
+```
 
 
 ```r
@@ -1104,7 +1123,7 @@ filtered_comb_mat <- pept_comb_mat[comb_name(pept_comb_mat) %in% interesting_com
 UpSet(filtered_comb_mat)
 ```
 
-![plot of chunk unnamed-chunk-49](figure/unnamed-chunk-49-1.png)
+![plot of chunk unnamed-chunk-52](figure/unnamed-chunk-52-1.png)
 
 Most identified peptides, as expected, are specific and non-terminal.
 
@@ -1188,6 +1207,13 @@ features <- annotated_w_abund %>%
 interesting_features <- features %>%
                     filter(specificity == "semi_specific",
                            nterm == "TMT-labelled")
+```
+
+**Apply feature-specific FDR correction**
+
+
+```r
+source(here("R/feature_specific_fdr.R"))
 ```
 
 
@@ -1315,7 +1341,7 @@ prop_abund_pept <- ggplot(pept_sum_summary,
 print(prop_abund_pept)
 ```
 
-![plot of chunk unnamed-chunk-60](figure/unnamed-chunk-60-1.png)
+![plot of chunk unnamed-chunk-64](figure/unnamed-chunk-64-1.png)
 
 ### Generate plot of sum of abundances semi-specific peptides
 
@@ -1356,7 +1382,7 @@ sum_semi_abunds <- ggplot(pept_summary_semi_1,
 print(sum_semi_abunds)
 ```
 
-![plot of chunk unnamed-chunk-62](figure/unnamed-chunk-62-1.png)
+![plot of chunk unnamed-chunk-66](figure/unnamed-chunk-66-1.png)
 
 ## Comparative analysis of semi-specific peptides vs protein abundance
 
@@ -1471,6 +1497,11 @@ cor.test(log2semipept2_log2protein_spec$logFC_semi_peptide,
 
 
 ```r
+source(here("R/get_cleave_area.R"))
+```
+
+
+```r
 cleave_areas <- get_cleave_area(cleavage_annoated_peptides)
 ```
 
@@ -1561,7 +1592,7 @@ dau_nogroup_increased <- testDAU(form_peptidesincreased_4ice,
 dagHeatmap(dau_nogroup_increased) 
 ```
 
-![plot of chunk unnamed-chunk-76](figure/unnamed-chunk-76-1.png)
+![plot of chunk unnamed-chunk-81](figure/unnamed-chunk-81-1.png)
 
 
 ```r
@@ -1569,7 +1600,7 @@ dagLogo(testDAUresults = dau_nogroup_increased,
         pvalueCutoff = 0.05)
 ```
 
-![plot of chunk unnamed-chunk-77](figure/unnamed-chunk-77-1.png)
+![plot of chunk unnamed-chunk-82](figure/unnamed-chunk-82-1.png)
 
 #### Decreased Proteolityc products
 
@@ -1592,7 +1623,7 @@ dau_nogroup_decreased <- testDAU(form_peptidesdecreased_4ice,
 dagHeatmap(dau_nogroup_decreased) 
 ```
 
-![plot of chunk unnamed-chunk-80](figure/unnamed-chunk-80-1.png)
+![plot of chunk unnamed-chunk-85](figure/unnamed-chunk-85-1.png)
 
 
 ```r
@@ -1600,7 +1631,7 @@ dagLogo(testDAUresults = dau_nogroup_decreased,
         pvalueCutoff = 0.05)
 ```
 
-![plot of chunk unnamed-chunk-81](figure/unnamed-chunk-81-1.png)
+![plot of chunk unnamed-chunk-86](figure/unnamed-chunk-86-1.png)
 
 ## Qualitative information from semi-specific peptides
 
@@ -1616,6 +1647,11 @@ We wrote functions to count the position of these modifications within the prote
 
 
 ```r
+source(here("R/count_location_nterm.R"))
+```
+
+
+```r
 n_counts_comb <- count_location_nterm(nterm_annot = nterannot)
 ```
 
@@ -1624,14 +1660,14 @@ n_counts_comb <- count_location_nterm(nterm_annot = nterannot)
 print(n_counts_comb$plot_aa_before)
 ```
 
-![plot of chunk unnamed-chunk-83](figure/unnamed-chunk-83-1.png)
+![plot of chunk unnamed-chunk-89](figure/unnamed-chunk-89-1.png)
 
 
 ```r
 print(n_counts_comb$plot_normalized_location)
 ```
 
-![plot of chunk unnamed-chunk-84](figure/unnamed-chunk-84-1.png)
+![plot of chunk unnamed-chunk-90](figure/unnamed-chunk-90-1.png)
 
 ### Annotation of N-terminal peptides as canonical or not
 
@@ -1713,6 +1749,11 @@ We bundled this process in the function `categorize_nterm`.
 
 
 ```r
+source(here("R/categorize_nterm.R"))
+```
+
+
+```r
 categorized_ntermini <- categorize_nterm(annotated_peptides = nterannot, 
                                          uniprot_features = df_uniprot_features)
 ```
@@ -1722,4 +1763,4 @@ categorized_ntermini <- categorize_nterm(annotated_peptides = nterannot,
 print(categorized_ntermini$ntermini_category_plot)
 ```
 
-![plot of chunk unnamed-chunk-90](figure/unnamed-chunk-90-1.png)
+![plot of chunk unnamed-chunk-97](figure/unnamed-chunk-97-1.png)

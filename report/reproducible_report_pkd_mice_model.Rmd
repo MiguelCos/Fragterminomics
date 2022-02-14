@@ -621,6 +621,12 @@ The first step for analyzing semi-specific search results in terms of large scal
 
 We do that in the context of this data analysis approach with the `annotate_peptides` function.
 
+**Load the `annotate_peptides` function**
+
+```{r}
+source(here("R/annotate_peptides.R"))
+```
+
 We need to prepare the input data frame for the `annotate_peptides` function. Requirements: a data frame with at least 2 columns: `Genes`, with uniprot IDs and `Peptides`, with sequences of the identified peptides.
 
 First, let's check the data frame with the identified peptides.
@@ -652,6 +658,12 @@ if(!file.exists(here("report/outputs/cleavage_annoated_peptides_final.tsv"))){
 ## Annotate peptides (N-term modification)
 
 After annotating the peptides by their specificity, we want to evaluate the chemical modifications found at the N-term. In the context of this experimental design, we are able to use the TMT labelling at the N-term as a corroboration of the origin of the identified peptide as a proteolytic product.
+
+**Load `annotate_nterm` function**
+
+```{r}
+source(here("R/annotate_nterm.R"))
+```
 
 Merging table of specificity-labelled peptide with identifications table:
 
@@ -699,6 +711,10 @@ tocorrect_nas2 <- bind_rows(tocorrect_nas,
 ## Summarize peptide counts per feature
 
 We will use the function `summarize_peptide_counts`, which will help us see to counts of identified peptides per interesting feature in terms of specificity and (bio)chemical modifications.
+
+```{r}
+source(here("R/summarize_peptide_counts.R"))
+```
 
 ```{r}
 summary_count <- summarize_peptide_counts(nterannot) 
@@ -863,6 +879,12 @@ features <- annotated_w_abund %>%
 interesting_features <- features %>%
                     filter(specificity == "semi_specific",
                            nterm == "TMT-labelled")
+```
+
+**Apply feature-specific FDR correction**
+
+```{r}
+source(here("R/feature_specific_fdr.R"))
 ```
 
 ```{r}
@@ -1156,6 +1178,10 @@ cor.test(log2semipept2_log2protein_spec$logFC_semi_peptide,
 ## Analysis of differential amino acid usage (iceLogo)
 
 ```{r}
+source(here("R/get_cleave_area.R"))
+```
+
+```{r}
 cleave_areas <- get_cleave_area(cleavage_annoated_peptides)
 ```
 
@@ -1279,6 +1305,10 @@ Based on our experimental context, TMT-tagged peptides at the N-termini can be c
 We wrote functions to count the position of these modifications within the protein sequence.
 
 ```{r}
+source(here("R/count_location_nterm.R"))
+```
+
+```{r}
 n_counts_comb <- count_location_nterm(nterm_annot = nterannot)
 ```
 
@@ -1359,6 +1389,10 @@ df_features_df <- bind_rows(df_uniprot_features)
 Then, we want to keep only features associated with post-processing and match the semi-specific cleavage positions vs the end location of the annotated processing sites of the associated protein. Three (+/- 3) amino acid residues were accepted. Then, the matched locations are categorized according to the type of processing associated to it and visualizations are generated.
 
 We bundled this process in the function `categorize_nterm`.
+
+```{r}
+source(here("R/categorize_nterm.R"))
+```
 
 ```{r}
 categorized_ntermini <- categorize_nterm(annotated_peptides = nterannot, 
