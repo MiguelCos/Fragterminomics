@@ -1,5 +1,5 @@
 ---
-title: Large scale analysis of proteolytic processing - Polycystic kidney disease
+title: Use case -  Large scale analysis of proteolytic processing in polycystic kidney disease
   in mice
 author: "Miguel Cosenza - Ada Seredynska"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
