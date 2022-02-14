@@ -5,7 +5,6 @@ author: "Miguel Cosenza - Ada Seredynska"
 date: "14 February, 2022"
 output: 
   github_document
-always_allow_html: true
 ---
 
 
@@ -841,18 +840,21 @@ head(pept_ident)
 
 ```
 ## # A tibble: 6 x 33
-##   peptide      prev_aa next_aa peptide_length charges probability spectral_count intensity assigned_modificatio~
-##   <chr>        <chr>   <chr>            <dbl> <chr>         <dbl>          <dbl>     <dbl> <chr>                
-## 1 AAAAAAAAAAA~ R       F                   44 5, 6          0.999              2   318955. 20K(304.2072), 27K(3~
-## 2 AAAAAAAAAAG~ M       G                   16 2             1.00               2        0  N-term(42.0106)      
-## 3 AAAAAAAAGAA~ A       R                   21 2             0.904              1        0  N-term(42.0106)      
-## 4 AAAAAAATKPAR F       K                   12 3             0.993              2        0  9K(304.2072), N-term~
-## 5 AAAAAASHLNL~ M       E                   15 2             1                  1        0  N-term(42.0106)      
-## 6 AAAAATAATKG~ M       V                   18 2, 3          1                  7  9052923. 10K(304.2072), N-ter~
-## # ... with 24 more variables: observed_modifications <lgl>, protein <chr>, protein_id <chr>, entry_name <chr>,
-## #   gene <chr>, protein_description <chr>, mapped_genes <chr>, mapped_proteins <chr>, wt1 <dbl>, ko1 <dbl>,
-## #   wt2 <dbl>, ko2 <dbl>, wt3 <dbl>, ko3 <dbl>, wt4 <dbl>, ko4 <dbl>, wt5 <dbl>, ko5 <dbl>, wt6 <dbl>,
-## #   mt_29 <dbl>, mt_30 <dbl>, mt_31 <dbl>, mt_32 <dbl>, mt_33 <dbl>
+##   peptide      prev_aa next_aa peptide_length charges probability spectral_count
+##   <chr>        <chr>   <chr>            <dbl> <chr>         <dbl>          <dbl>
+## 1 AAAAAAAAAAA~ R       F                   44 5, 6          0.999              2
+## 2 AAAAAAAAAAG~ M       G                   16 2             1.00               2
+## 3 AAAAAAAAGAA~ A       R                   21 2             0.904              1
+## 4 AAAAAAATKPAR F       K                   12 3             0.993              2
+## 5 AAAAAASHLNL~ M       E                   15 2             1                  1
+## 6 AAAAATAATKG~ M       V                   18 2, 3          1                  7
+## # ... with 26 more variables: intensity <dbl>, assigned_modifications <chr>,
+## #   observed_modifications <lgl>, protein <chr>, protein_id <chr>,
+## #   entry_name <chr>, gene <chr>, protein_description <chr>,
+## #   mapped_genes <chr>, mapped_proteins <chr>, wt1 <dbl>, ko1 <dbl>, wt2 <dbl>,
+## #   ko2 <dbl>, wt3 <dbl>, ko3 <dbl>, wt4 <dbl>, ko4 <dbl>, wt5 <dbl>,
+## #   ko5 <dbl>, wt6 <dbl>, mt_29 <dbl>, mt_30 <dbl>, mt_31 <dbl>, mt_32 <dbl>,
+## #   mt_33 <dbl>
 ```
 
 Get the two interesting columns and change the names.
@@ -1091,9 +1093,9 @@ set_name(pept_comb_mat)
 ```
 
 ```
-## [1] "specificity_specific" "specificity_semi"     "nterm_acetyl"         "nterm_tmtlab"        
-## [5] "nterm_free"           "semitype_Nterm"       "semitype_Cterm"       "terminal_yes"        
-## [9] "terminal_no"
+## [1] "specificity_specific" "specificity_semi"     "nterm_acetyl"        
+## [4] "nterm_tmtlab"         "nterm_free"           "semitype_Nterm"      
+## [7] "semitype_Cterm"       "terminal_yes"         "terminal_no"
 ```
 
 And now we can check the code that was assigned to each of the combinations of these elements.
@@ -1104,16 +1106,21 @@ comb_name(pept_comb_mat)
 ```
 
 ```
-##  [1] "101001010" "100101010" "100100110" "100011010" "100010110" "011001010" "011001001" "011000101" "010101010"
-## [10] "010101001" "010100110" "010100101" "010011010" "010011001" "010010110" "010010101" "101001000" "101000010"
-## [19] "101000001" "100101000" "100100100" "100100010" "100100001" "100011000" "100010100" "100010010" "100010001"
-## [28] "100001010" "100000110" "011001000" "011000100" "011000010" "011000001" "010101000" "010100100" "010100010"
-## [37] "010100001" "010011000" "010010100" "010010010" "010010001" "010001010" "010001001" "010000110" "010000101"
-## [46] "001001010" "001001001" "001000101" "000101010" "000101001" "000100110" "000100101" "000011010" "000011001"
-## [55] "000010110" "000010101" "101000000" "100100000" "100010000" "100001000" "100000100" "100000010" "100000001"
-## [64] "011000000" "010100000" "010010000" "010001000" "010000100" "010000010" "010000001" "001001000" "001000100"
-## [73] "001000010" "001000001" "000101000" "000100100" "000100010" "000100001" "000011000" "000010100" "000010010"
-## [82] "000010001" "000001010" "000001001" "000000110" "000000101" "100000000" "010000000" "001000000" "000100000"
+##  [1] "101001010" "100101010" "100100110" "100011010" "100010110" "011001010"
+##  [7] "011001001" "011000101" "010101010" "010101001" "010100110" "010100101"
+## [13] "010011010" "010011001" "010010110" "010010101" "101001000" "101000010"
+## [19] "101000001" "100101000" "100100100" "100100010" "100100001" "100011000"
+## [25] "100010100" "100010010" "100010001" "100001010" "100000110" "011001000"
+## [31] "011000100" "011000010" "011000001" "010101000" "010100100" "010100010"
+## [37] "010100001" "010011000" "010010100" "010010010" "010010001" "010001010"
+## [43] "010001001" "010000110" "010000101" "001001010" "001001001" "001000101"
+## [49] "000101010" "000101001" "000100110" "000100101" "000011010" "000011001"
+## [55] "000010110" "000010101" "101000000" "100100000" "100010000" "100001000"
+## [61] "100000100" "100000010" "100000001" "011000000" "010100000" "010010000"
+## [67] "010001000" "010000100" "010000010" "010000001" "001001000" "001000100"
+## [73] "001000010" "001000001" "000101000" "000100100" "000100010" "000100001"
+## [79] "000011000" "000010100" "000010010" "000010001" "000001010" "000001001"
+## [85] "000000110" "000000101" "100000000" "010000000" "001000000" "000100000"
 ## [91] "000010000" "000001000" "000000100" "000000010" "000000001"
 ```
 
