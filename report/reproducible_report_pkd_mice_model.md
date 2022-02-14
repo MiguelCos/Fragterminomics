@@ -1,10 +1,9 @@
 ---
-title: Use case -  Large scale analysis of proteolytic processing in polycystic kidney disease
+title: Large scale analysis of proteolytic processing in polycystic kidney disease
   in mice
 author: "Miguel Cosenza - Ada Seredynska"
 date: "14 February, 2022"
-output: 
-  github_document
+output: github_document
 ---
 
 
@@ -15,36 +14,20 @@ knitr::opts_chunk$set(echo = TRUE,
 ```
 
 
+
+# Initializing package  
+
+__Installation__
+
+
 ```r
-## Required packages ----
-library(tidyverse)
-library(mixOmics)
-library(kableExtra)
-library(limma)
-library(naniar)
-library(clusterProfiler)
-library(ReactomePA)
-library(org.Mm.eg.db)
-library(here)
-library(janitor)
-library(drawProteins)
-library(seqinr)
-library(ggpubr)
+devtools::install_github("MiguelCos/fragNterminomics")
+```
+__Loading__
 
-source(here("R/helper_functions.R"))
 
-theme_set(theme(axis.text.x = element_text(hjust = 0.5, vjust = 0, size = 6, 
-                                           angle = 90),
-                axis.text.y = element_text(hjust = 0.5, vjust = 0, size = 6),
-                panel.background = element_blank(),
-                panel.grid.major = element_line(color = "grey"),
-                panel.border = element_rect(colour = "black", fill=NA, size=1.5),
-                axis.title=element_text(size=8),
-                legend.text = element_text(size = 7),
-                legend.title = element_text(size = 8),
-                legend.key.height= unit(3, 'mm'),
-                legend.key.width= unit(3, 'mm'),
-                legend.position="bottom"))
+```r
+library(fragNterminomics)
 ```
 
 # General experimental information
@@ -58,7 +41,7 @@ The general annotation of the samples is outlined below, with wild-type (WT) sam
 
 ```r
 # load the tabular information from the samples
-sample_annotation <- read_csv(here("data-raw/annotation.csv"))
+sample_annotation <- fragNterminomics::sample_annotation
 ```
 
 <table class="table table-striped table-hover" style="font-size: 14px; margin-left: auto; margin-right: auto;">
@@ -158,22 +141,18 @@ We have included the sample outputs from our search in this repo, and can be loa
 
 
 ```r
-prot_abund_mat <- read_tsv(here("data-raw/abundance_protein_MD.tsv")) %>%
-                    clean_names()
+prot_abund_mat <- fragNterminomics::prot_abund_mat
 
-pept_abund_mat <- read_tsv(here("data-raw/abundance_peptide_MD.tsv")) %>%
-                    clean_names()
+pept_abund_mat <- fragNterminomics::pept_abund_mat
 ```
 
 We also want the complete list of identified peptides and proteins, including the identified modifications and their locations. We need this information in order to be able to define peptides as semi-specific or not, and also to annotate their (bio)-chemical modifications. All this is important for later labeling of the identified peptides as proteolytic products or not. In our example, the tabular lists of peptides and proteins can be found as `protein.tsv` and `peptide.tsv` in the FragPipe output.
 
 
 ```r
-prot_ident <- read_tsv(here("data-raw/protein.tsv")) %>%
-                    clean_names()
+prot_ident <- fragNterminomics::prot_ident
 
-pept_ident <- read_tsv(here("data-raw/peptide.tsv")) %>%
-                    clean_names()
+pept_ident <- fragNterminomics::pept_ident
 ```
 
 Finally, we want a FASTA file containing, at least, all the proteins identified in our experiment (therefore found in the tabular outputs loaded above). FragPipe writes a FASTA file of identified proteins for each TMT mixture in the experiment. We can find it as `protein.fas` in our example. The user can also use the FASTA file used for the search.
@@ -182,9 +161,7 @@ We use the `read.fasta` function from the `seqinr` package. Setting the paramete
 
 
 ```r
-fasta <- read.fasta(here("data-raw/protein.fas"), 
-                    as.string = TRUE, 
-                    seqtype = "AA")
+fasta <- fragNterminomics::fasta
 ```
 
 The `clean_names` function from the `janitor` package was used to have consistent column names in the loaded data frames.
@@ -318,7 +295,7 @@ qcplot <- ggplot(quant_annot,
 print(qcplot)
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
+![plot of chunk unnamed-chunk-32](figure/unnamed-chunk-32-1.png)
 
 We observe that there is consistent normal distribution of abundances between samples, allowing for comparisons and further statistical processing.
 
@@ -357,7 +334,7 @@ qcplot_prots <- ggplot(quant_annot %>%
 print(qcplot_prots)
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
+![plot of chunk unnamed-chunk-34](figure/unnamed-chunk-34-1.png)
 
 We can observe that, in general, the proteins show a normal distribution in terms of their normalized abundance values after TMT integrator.
 
@@ -389,7 +366,7 @@ And plot the variance explained per component.
 plot(pca_res)
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
+![plot of chunk unnamed-chunk-37](figure/unnamed-chunk-37-1.png)
 
 \~60% of the variance based on protein abundance can be explained by components 1 and 2 after PCA.
 
@@ -432,7 +409,7 @@ ggplot(data = pca_variates,
         legend.position="bottom")
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
+![plot of chunk unnamed-chunk-39](figure/unnamed-chunk-39-1.png)
 
 The PCA allow us to observe a striking difference in the proteome between WT and KO samples.
 
@@ -551,7 +528,7 @@ our_volcano(limma_tab,
         legend.position="bottom") 
 ```
 
-![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
+![plot of chunk unnamed-chunk-45](figure/unnamed-chunk-45-1.png)
 
 In correspondence with what was observed after PCA, we see an important fraction of identified proteins as differentially expressed between the two studied phenotypes.
 
@@ -733,7 +710,7 @@ enrichpl <- enrichplot::dotplot(group_comparison_react, x = "characteristic") +
 print(enrichpl)
 ```
 
-![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-26-1.png)
+![plot of chunk unnamed-chunk-49](figure/unnamed-chunk-49-1.png)
 
 We can observe that there is a differentiated biological fingerprint between KO vs WT phenotypes. Proteins up-regulated in KO are mostly markers of immune response and ECM organization, while downregulated proteins are those associated with energy metabolism.
 
@@ -773,7 +750,7 @@ qcplot_pept <- ggplot(quant_annot_pept,
 print(qcplot_pept)
 ```
 
-![plot of chunk unnamed-chunk-27](figure/unnamed-chunk-27-1.png)
+![plot of chunk unnamed-chunk-50](figure/unnamed-chunk-50-1.png)
 
 ### By Protein
 
@@ -814,7 +791,7 @@ qcplot_pept <- ggplot(quant_annot_pept %>%
 print(qcplot_pept)
 ```
 
-![plot of chunk unnamed-chunk-29](figure/unnamed-chunk-29-1.png)
+![plot of chunk unnamed-chunk-52](figure/unnamed-chunk-52-1.png)
 
 ## Annotate peptides (specificity)
 
@@ -840,21 +817,19 @@ head(pept_ident)
 
 ```
 ## # A tibble: 6 x 33
-##   peptide      prev_aa next_aa peptide_length charges probability spectral_count
-##   <chr>        <chr>   <chr>            <dbl> <chr>         <dbl>          <dbl>
-## 1 AAAAAAAAAAA~ R       F                   44 5, 6          0.999              2
-## 2 AAAAAAAAAAG~ M       G                   16 2             1.00               2
-## 3 AAAAAAAAGAA~ A       R                   21 2             0.904              1
-## 4 AAAAAAATKPAR F       K                   12 3             0.993              2
-## 5 AAAAAASHLNL~ M       E                   15 2             1                  1
-## 6 AAAAATAATKG~ M       V                   18 2, 3          1                  7
-## # ... with 26 more variables: intensity <dbl>, assigned_modifications <chr>,
-## #   observed_modifications <lgl>, protein <chr>, protein_id <chr>,
-## #   entry_name <chr>, gene <chr>, protein_description <chr>,
-## #   mapped_genes <chr>, mapped_proteins <chr>, wt1 <dbl>, ko1 <dbl>, wt2 <dbl>,
-## #   ko2 <dbl>, wt3 <dbl>, ko3 <dbl>, wt4 <dbl>, ko4 <dbl>, wt5 <dbl>,
-## #   ko5 <dbl>, wt6 <dbl>, mt_29 <dbl>, mt_30 <dbl>, mt_31 <dbl>, mt_32 <dbl>,
-## #   mt_33 <dbl>
+##   peptide              prev_aa next_aa peptide_length charges probability spectral_count intensity
+##   <chr>                <chr>   <chr>            <dbl> <chr>         <dbl>          <dbl>     <dbl>
+## 1 AAAAAAAAAAAAAAAGAAG~ R       F                   44 5, 6          0.999              2   318955.
+## 2 AAAAAAAAAAGAAGGR     M       G                   16 2             1.00               2        0 
+## 3 AAAAAAAAGAAGGRGSGPG~ A       R                   21 2             0.904              1        0 
+## 4 AAAAAAATKPAR         F       K                   12 3             0.993              2        0 
+## 5 AAAAAASHLNLDALR      M       E                   15 2             1                  1        0 
+## 6 AAAAATAATKGNGGGSGR   M       V                   18 2, 3          1                  7  9052923.
+## # ... with 25 more variables: assigned_modifications <chr>, observed_modifications <lgl>,
+## #   protein <chr>, protein_id <chr>, entry_name <chr>, gene <chr>, protein_description <chr>,
+## #   mapped_genes <chr>, mapped_proteins <chr>, wt1 <dbl>, ko1 <dbl>, wt2 <dbl>, ko2 <dbl>,
+## #   wt3 <dbl>, ko3 <dbl>, wt4 <dbl>, ko4 <dbl>, wt5 <dbl>, ko5 <dbl>, wt6 <dbl>, mt_29 <dbl>,
+## #   mt_30 <dbl>, mt_31 <dbl>, mt_32 <dbl>, mt_33 <dbl>
 ```
 
 Get the two interesting columns and change the names.
@@ -1093,9 +1068,9 @@ set_name(pept_comb_mat)
 ```
 
 ```
-## [1] "specificity_specific" "specificity_semi"     "nterm_acetyl"        
-## [4] "nterm_tmtlab"         "nterm_free"           "semitype_Nterm"      
-## [7] "semitype_Cterm"       "terminal_yes"         "terminal_no"
+## [1] "specificity_specific" "specificity_semi"     "nterm_acetyl"         "nterm_tmtlab"        
+## [5] "nterm_free"           "semitype_Nterm"       "semitype_Cterm"       "terminal_yes"        
+## [9] "terminal_no"
 ```
 
 And now we can check the code that was assigned to each of the combinations of these elements.
@@ -1106,22 +1081,20 @@ comb_name(pept_comb_mat)
 ```
 
 ```
-##  [1] "101001010" "100101010" "100100110" "100011010" "100010110" "011001010"
-##  [7] "011001001" "011000101" "010101010" "010101001" "010100110" "010100101"
-## [13] "010011010" "010011001" "010010110" "010010101" "101001000" "101000010"
-## [19] "101000001" "100101000" "100100100" "100100010" "100100001" "100011000"
-## [25] "100010100" "100010010" "100010001" "100001010" "100000110" "011001000"
-## [31] "011000100" "011000010" "011000001" "010101000" "010100100" "010100010"
-## [37] "010100001" "010011000" "010010100" "010010010" "010010001" "010001010"
-## [43] "010001001" "010000110" "010000101" "001001010" "001001001" "001000101"
-## [49] "000101010" "000101001" "000100110" "000100101" "000011010" "000011001"
-## [55] "000010110" "000010101" "101000000" "100100000" "100010000" "100001000"
-## [61] "100000100" "100000010" "100000001" "011000000" "010100000" "010010000"
-## [67] "010001000" "010000100" "010000010" "010000001" "001001000" "001000100"
-## [73] "001000010" "001000001" "000101000" "000100100" "000100010" "000100001"
-## [79] "000011000" "000010100" "000010010" "000010001" "000001010" "000001001"
-## [85] "000000110" "000000101" "100000000" "010000000" "001000000" "000100000"
-## [91] "000010000" "000001000" "000000100" "000000010" "000000001"
+##  [1] "101001010" "100101010" "100100110" "100011010" "100010110" "011001010" "011001001"
+##  [8] "011000101" "010101010" "010101001" "010100110" "010100101" "010011010" "010011001"
+## [15] "010010110" "010010101" "101001000" "101000010" "101000001" "100101000" "100100100"
+## [22] "100100010" "100100001" "100011000" "100010100" "100010010" "100010001" "100001010"
+## [29] "100000110" "011001000" "011000100" "011000010" "011000001" "010101000" "010100100"
+## [36] "010100010" "010100001" "010011000" "010010100" "010010010" "010010001" "010001010"
+## [43] "010001001" "010000110" "010000101" "001001010" "001001001" "001000101" "000101010"
+## [50] "000101001" "000100110" "000100101" "000011010" "000011001" "000010110" "000010101"
+## [57] "101000000" "100100000" "100010000" "100001000" "100000100" "100000010" "100000001"
+## [64] "011000000" "010100000" "010010000" "010001000" "010000100" "010000010" "010000001"
+## [71] "001001000" "001000100" "001000010" "001000001" "000101000" "000100100" "000100010"
+## [78] "000100001" "000011000" "000010100" "000010010" "000010001" "000001010" "000001001"
+## [85] "000000110" "000000101" "100000000" "010000000" "001000000" "000100000" "000010000"
+## [92] "000001000" "000000100" "000000010" "000000001"
 ```
 
 We can now prepare a vector of interesting intersections:
@@ -1157,7 +1130,7 @@ filtered_comb_mat <- pept_comb_mat[comb_name(pept_comb_mat) %in% interesting_com
 UpSet(filtered_comb_mat)
 ```
 
-![plot of chunk unnamed-chunk-50](figure/unnamed-chunk-50-1.png)
+![plot of chunk unnamed-chunk-73](figure/unnamed-chunk-73-1.png)
 
 Most identified peptides, as expected, are specific and non-terminal.
 
@@ -1375,7 +1348,7 @@ prop_abund_pept <- ggplot(pept_sum_summary,
 print(prop_abund_pept)
 ```
 
-![plot of chunk unnamed-chunk-62](figure/unnamed-chunk-62-1.png)
+![plot of chunk unnamed-chunk-85](figure/unnamed-chunk-85-1.png)
 
 ### Generate plot of sum of abundances semi-specific peptides
 
@@ -1416,7 +1389,7 @@ sum_semi_abunds <- ggplot(pept_summary_semi_1,
 print(sum_semi_abunds)
 ```
 
-![plot of chunk unnamed-chunk-64](figure/unnamed-chunk-64-1.png)
+![plot of chunk unnamed-chunk-87](figure/unnamed-chunk-87-1.png)
 
 ## Comparative analysis of semi-specific peptides vs protein abundance
 
@@ -1626,7 +1599,7 @@ dau_nogroup_increased <- testDAU(form_peptidesincreased_4ice,
 dagHeatmap(dau_nogroup_increased) 
 ```
 
-![plot of chunk unnamed-chunk-79](figure/unnamed-chunk-79-1.png)
+![plot of chunk unnamed-chunk-102](figure/unnamed-chunk-102-1.png)
 
 
 ```r
@@ -1634,7 +1607,7 @@ dagLogo(testDAUresults = dau_nogroup_increased,
         pvalueCutoff = 0.05)
 ```
 
-![plot of chunk unnamed-chunk-80](figure/unnamed-chunk-80-1.png)
+![plot of chunk unnamed-chunk-103](figure/unnamed-chunk-103-1.png)
 
 #### Decreased Proteolityc products
 
@@ -1657,7 +1630,7 @@ dau_nogroup_decreased <- testDAU(form_peptidesdecreased_4ice,
 dagHeatmap(dau_nogroup_decreased) 
 ```
 
-![plot of chunk unnamed-chunk-83](figure/unnamed-chunk-83-1.png)
+![plot of chunk unnamed-chunk-106](figure/unnamed-chunk-106-1.png)
 
 
 ```r
@@ -1665,7 +1638,7 @@ dagLogo(testDAUresults = dau_nogroup_decreased,
         pvalueCutoff = 0.05)
 ```
 
-![plot of chunk unnamed-chunk-84](figure/unnamed-chunk-84-1.png)
+![plot of chunk unnamed-chunk-107](figure/unnamed-chunk-107-1.png)
 
 ## Qualitative information from semi-specific peptides
 
@@ -1694,14 +1667,14 @@ n_counts_comb <- count_location_nterm(nterm_annot = nterannot)
 print(n_counts_comb$plot_aa_before)
 ```
 
-![plot of chunk unnamed-chunk-87](figure/unnamed-chunk-87-1.png)
+![plot of chunk unnamed-chunk-110](figure/unnamed-chunk-110-1.png)
 
 
 ```r
 print(n_counts_comb$plot_normalized_location)
 ```
 
-![plot of chunk unnamed-chunk-88](figure/unnamed-chunk-88-1.png)
+![plot of chunk unnamed-chunk-111](figure/unnamed-chunk-111-1.png)
 
 ### Annotation of N-terminal peptides as canonical or not
 
@@ -1797,4 +1770,4 @@ categorized_ntermini <- categorize_nterm(annotated_peptides = nterannot,
 print(categorized_ntermini$ntermini_category_plot)
 ```
 
-![plot of chunk unnamed-chunk-95](figure/unnamed-chunk-95-1.png)
+![plot of chunk unnamed-chunk-118](figure/unnamed-chunk-118-1.png)

@@ -1,10 +1,9 @@
 ---
-title: Use case -  Large scale analysis of proteolytic processing in polycystic kidney disease
+title: Large scale analysis of proteolytic processing in polycystic kidney disease
   in mice
 author: "Miguel Cosenza - Ada Seredynska"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: 
-  github_document
+output: github_document
 ---
 
 ```{r}
@@ -13,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE)
 ```
 
-```{r results='hide'}
+```{r results='hide', echo=FALSE}
 ## Required packages ----
 library(tidyverse)
 library(mixOmics)
@@ -29,8 +28,6 @@ library(drawProteins)
 library(seqinr)
 library(ggpubr)
 
-source(here("R/helper_functions.R"))
-
 theme_set(theme(axis.text.x = element_text(hjust = 0.5, vjust = 0, size = 6, 
                                            angle = 90),
                 axis.text.y = element_text(hjust = 0.5, vjust = 0, size = 6),
@@ -45,6 +42,19 @@ theme_set(theme(axis.text.x = element_text(hjust = 0.5, vjust = 0, size = 6,
                 legend.position="bottom"))
 ```
 
+# Initializing package  
+
+__Installation__
+
+```{r results='hide'}
+devtools::install_github("MiguelCos/fragNterminomics")
+```
+__Loading__
+
+```{r results='hide'}
+library(fragNterminomics)
+```
+
 # General experimental information
 
 In order to showcase the capabilities of modern bioformatics tools in combination with our data analysis approach to extract information related to proteolytic processing from shotgun proteomics data (i.e. without biochemical enrichment), we used a mouse model of polycystic kidney disease (PKD) and isobaric labeling at the protein level.
@@ -55,7 +65,7 @@ The general annotation of the samples is outlined below, with wild-type (WT) sam
 
 ```{r}
 # load the tabular information from the samples
-sample_annotation <- read_csv(here("data-raw/annotation.csv"))
+sample_annotation <- fragNterminomics::sample_annotation
 ```
 
 ```{r echo=FALSE, error=TRUE}
@@ -92,21 +102,17 @@ For quantitative analysis, we would need normalized abundance values of the pept
 We have included the sample outputs from our search in this repo, and can be loaded as follows:
 
 ```{r}
-prot_abund_mat <- read_tsv(here("data-raw/abundance_protein_MD.tsv")) %>%
-                    clean_names()
+prot_abund_mat <- fragNterminomics::prot_abund_mat
 
-pept_abund_mat <- read_tsv(here("data-raw/abundance_peptide_MD.tsv")) %>%
-                    clean_names()
+pept_abund_mat <- fragNterminomics::pept_abund_mat
 ```
 
 We also want the complete list of identified peptides and proteins, including the identified modifications and their locations. We need this information in order to be able to define peptides as semi-specific or not, and also to annotate their (bio)-chemical modifications. All this is important for later labeling of the identified peptides as proteolytic products or not. In our example, the tabular lists of peptides and proteins can be found as `protein.tsv` and `peptide.tsv` in the FragPipe output.
 
 ```{r}
-prot_ident <- read_tsv(here("data-raw/protein.tsv")) %>%
-                    clean_names()
+prot_ident <- fragNterminomics::prot_ident
 
-pept_ident <- read_tsv(here("data-raw/peptide.tsv")) %>%
-                    clean_names()
+pept_ident <- fragNterminomics::pept_ident
 ```
 
 Finally, we want a FASTA file containing, at least, all the proteins identified in our experiment (therefore found in the tabular outputs loaded above). FragPipe writes a FASTA file of identified proteins for each TMT mixture in the experiment. We can find it as `protein.fas` in our example. The user can also use the FASTA file used for the search.
@@ -114,9 +120,7 @@ Finally, we want a FASTA file containing, at least, all the proteins identified 
 We use the `read.fasta` function from the `seqinr` package. Setting the parameter `as.string = TRUE` . This is important for later annotation of the identified peptides.
 
 ```{r}
-fasta <- read.fasta(here("data-raw/protein.fas"), 
-                    as.string = TRUE, 
-                    seqtype = "AA")
+fasta <- fragNterminomics::fasta
 ```
 
 The `clean_names` function from the `janitor` package was used to have consistent column names in the loaded data frames.

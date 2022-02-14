@@ -23,7 +23,7 @@ devtools::install_github("MiguelCos/fragNterminomics")
 
 ## Usability example: 
 
-You can find an use case of this workflow
+You can find an use case of this workflow, together with experimental and data analysis description in the following [here](https://github.com/MiguelCos/fragNterminomics/blob/master/report/reproducible_report_pkd_mice_model.md)
 
 
 
