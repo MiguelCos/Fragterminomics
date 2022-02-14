@@ -5,27 +5,12 @@
 #'
 #' @format A data frame with 30879 rows and 33 variables:
 #' \describe{
-#'   \item{peptide}{Peptide sequence}
-#'   \item{prev_aa}{Amino acid before in the protein sequence}
-#'   \item{next_aa}{Amino acid after in the protein sequence}
-#'   \item{peptide_length}
-#'   \item{probability}{Peptide Probability Score}
-#'   \item{spectral_count}{Spectral counts for identified peptide}
-#'   \item{intensity}{Raw intensity value of precursor ion}
-#'   \item{assigned_modifications}{Chemical modifications assigned to the identified peptide}
-#'   \item{observed_modifications}
-#'   \item{protein}{Protein header}
-#'   \item{protein_id}{Uniprot ID}
-#'   \item{entry_name}{Uniprot entry name}
-#'   \item{gene}
-#'   \item{protein_description}
-#'   \item{mapped_genes}
-#'   \item{mapped_proteins}{Number of unique peptides identified}
-#'   \item{ko/wt}{Raw intensity values of reporter ions by sample}
-#'   \item{mt_*}{Raw intensity values of empty TMT channels}
+#'   \item{channel}{TMT channel}
+#'   \item{sample_id}{Sample ID}
+#'   \item{condition}{Condition}
 #' }
 #' @source
-"pept_ident"
+"sample_annotation"
 #' @title Protein sequences of identified proteins
 #'
 #' @description Protein sequences of identified proteins in the Polycystic Disease mouse model experiment
