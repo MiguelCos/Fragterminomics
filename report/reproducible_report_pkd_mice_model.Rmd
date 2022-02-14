@@ -902,7 +902,7 @@ diff_abund_pept1 <- compar_tab_interesting_pept %>%
 
 size <- 0.5
 
-pept_semi_annot <- ggplot(data = compar_tab_interesting_pept,
+pept_semi_plotlim <- ggplot(data = compar_tab_interesting_pept,
                       mapping = aes(x = logFC, y = -log10(adj.P.Val))) +
       geom_point(data = compar_tab_interesting_pept %>% filter(logFC > 0,
                                            adj.P.Val < 0.05),
@@ -936,6 +936,11 @@ pept_semi_annot <- ggplot(data = compar_tab_interesting_pept,
         legend.key.width= unit(3, 'mm'),
         legend.position="bottom") 
 ```
+
+```{r}
+print(pept_semi_plotlim)
+```
+
 
 ## Proportional abundance of proteolytic peptides
 
