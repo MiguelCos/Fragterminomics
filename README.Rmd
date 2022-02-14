@@ -30,5 +30,7 @@ devtools::install_github("MiguelCos/fragNterminomics")
 
 ## Usability example: 
 
+You can find an use case of this workflow
+
 
 

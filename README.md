@@ -21,3 +21,9 @@ You can install the development version of fragNterminomics by typing:
 devtools::install_github("MiguelCos/fragNterminomics")
 ```
 
+## Usability example: 
+
+You can find an use case of this workflow
+
+
+
