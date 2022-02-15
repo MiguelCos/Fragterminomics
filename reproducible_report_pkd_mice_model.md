@@ -295,7 +295,7 @@ qcplot <- ggplot(quant_annot,
 print(qcplot)
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
 
 We observe that there is consistent normal distribution of abundances between samples, allowing for comparisons and further statistical processing.
 
@@ -334,7 +334,7 @@ qcplot_prots <- ggplot(quant_annot %>%
 print(qcplot_prots)
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
 
 We can observe that, in general, the proteins show a normal distribution in terms of their normalized abundance values after TMT integrator.
 
@@ -366,7 +366,7 @@ And plot the variance explained per component.
 plot(pca_res)
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
+![plot of chunk unnamed-chunk-19](figure/unnamed-chunk-19-1.png)
 
 \~60% of the variance based on protein abundance can be explained by components 1 and 2 after PCA.
 
@@ -409,7 +409,7 @@ ggplot(data = pca_variates,
         legend.position="bottom")
 ```
 
-![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18-1.png)
+![plot of chunk unnamed-chunk-21](figure/unnamed-chunk-21-1.png)
 
 The PCA allow us to observe a striking difference in the proteome between WT and KO samples.
 
@@ -528,7 +528,7 @@ our_volcano(limma_tab,
         legend.position="bottom") 
 ```
 
-![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-24-1.png)
+![plot of chunk unnamed-chunk-27](figure/unnamed-chunk-27-1.png)
 
 In correspondence with what was observed after PCA, we see an important fraction of identified proteins as differentially expressed between the two studied phenotypes.
 
@@ -710,7 +710,7 @@ enrichpl <- enrichplot::dotplot(group_comparison_react, x = "characteristic") +
 print(enrichpl)
 ```
 
-![plot of chunk unnamed-chunk-28](figure/unnamed-chunk-28-1.png)
+![plot of chunk unnamed-chunk-31](figure/unnamed-chunk-31-1.png)
 
 We can observe that there is a differentiated biological fingerprint between KO vs WT phenotypes. Proteins up-regulated in KO are mostly markers of immune response and ECM organization, while downregulated proteins are those associated with energy metabolism.
 
@@ -750,7 +750,7 @@ qcplot_pept <- ggplot(quant_annot_pept,
 print(qcplot_pept)
 ```
 
-![plot of chunk unnamed-chunk-29](figure/unnamed-chunk-29-1.png)
+![plot of chunk unnamed-chunk-32](figure/unnamed-chunk-32-1.png)
 
 ### By Protein
 
@@ -791,7 +791,7 @@ qcplot_pept <- ggplot(quant_annot_pept %>%
 print(qcplot_pept)
 ```
 
-![plot of chunk unnamed-chunk-31](figure/unnamed-chunk-31-1.png)
+![plot of chunk unnamed-chunk-34](figure/unnamed-chunk-34-1.png)
 
 ## Annotate peptides (specificity)
 
@@ -1153,7 +1153,7 @@ filtered_comb_mat <- pept_comb_mat[comb_name(pept_comb_mat) %in% interesting_com
 UpSet(filtered_comb_mat)
 ```
 
-![plot of chunk unnamed-chunk-49](figure/unnamed-chunk-49-1.png)
+![plot of chunk unnamed-chunk-52](figure/unnamed-chunk-52-1.png)
 
 Most identified peptides, as expected, are specific and non-terminal.
 
@@ -1279,7 +1279,7 @@ decreased_rec_pept <- compar_tab_interesting_pept %>%
 print(pept_semi_plotlim)
 ```
 
-![plot of chunk unnamed-chunk-57](figure/unnamed-chunk-57-1.png)
+![plot of chunk unnamed-chunk-60](figure/unnamed-chunk-60-1.png)
 
 
 ## Proportional abundance of proteolytic peptides
@@ -1372,7 +1372,7 @@ prop_abund_pept <- ggplot(pept_sum_summary,
 print(prop_abund_pept)
 ```
 
-![plot of chunk unnamed-chunk-61](figure/unnamed-chunk-61-1.png)
+![plot of chunk unnamed-chunk-64](figure/unnamed-chunk-64-1.png)
 
 ### Generate plot of sum of abundances semi-specific peptides
 
@@ -1413,7 +1413,7 @@ sum_semi_abunds <- ggplot(pept_summary_semi_1,
 print(sum_semi_abunds)
 ```
 
-![plot of chunk unnamed-chunk-63](figure/unnamed-chunk-63-1.png)
+![plot of chunk unnamed-chunk-66](figure/unnamed-chunk-66-1.png)
 
 ## Comparative analysis of semi-specific peptides vs protein abundance
 
@@ -1526,14 +1526,6 @@ cor.test(log2semipept2_log2protein_spec$logFC_semi_peptide,
 ## 0.8598128
 ```
 
-
-```r
-print(scatter_proteolysis_plot)
-```
-
-![plot of chunk unnamed-chunk-69](figure/unnamed-chunk-69-1.png)
-
-
 ## Analysis of differential amino acid usage (iceLogo)
 
 
@@ -1628,7 +1620,7 @@ dau_nogroup_increased <- testDAU(form_peptidesincreased_4ice,
 dagHeatmap(dau_nogroup_increased) 
 ```
 
-![plot of chunk unnamed-chunk-78](figure/unnamed-chunk-78-1.png)
+![plot of chunk unnamed-chunk-80](figure/unnamed-chunk-80-1.png)
 
 
 ```r
@@ -1636,7 +1628,7 @@ dagLogo(testDAUresults = dau_nogroup_increased,
         pvalueCutoff = 0.05)
 ```
 
-![plot of chunk unnamed-chunk-79](figure/unnamed-chunk-79-1.png)
+![plot of chunk unnamed-chunk-81](figure/unnamed-chunk-81-1.png)
 
 #### Decreased Proteolityc products
 
@@ -1659,7 +1651,7 @@ dau_nogroup_decreased <- testDAU(form_peptidesdecreased_4ice,
 dagHeatmap(dau_nogroup_decreased) 
 ```
 
-![plot of chunk unnamed-chunk-82](figure/unnamed-chunk-82-1.png)
+![plot of chunk unnamed-chunk-84](figure/unnamed-chunk-84-1.png)
 
 
 ```r
@@ -1667,7 +1659,7 @@ dagLogo(testDAUresults = dau_nogroup_decreased,
         pvalueCutoff = 0.05)
 ```
 
-![plot of chunk unnamed-chunk-83](figure/unnamed-chunk-83-1.png)
+![plot of chunk unnamed-chunk-85](figure/unnamed-chunk-85-1.png)
 
 ## Qualitative information from semi-specific peptides
 
@@ -1691,14 +1683,14 @@ n_counts_comb <- count_location_nterm(nterm_annot = nterannot)
 print(n_counts_comb$plot_aa_before)
 ```
 
-![plot of chunk unnamed-chunk-85](figure/unnamed-chunk-85-1.png)
+![plot of chunk unnamed-chunk-87](figure/unnamed-chunk-87-1.png)
 
 
 ```r
 print(n_counts_comb$plot_normalized_location)
 ```
 
-![plot of chunk unnamed-chunk-86](figure/unnamed-chunk-86-1.png)
+![plot of chunk unnamed-chunk-88](figure/unnamed-chunk-88-1.png)
 
 ### Annotation of N-terminal peptides as canonical or not
 
@@ -1789,4 +1781,4 @@ categorized_ntermini <- categorize_nterm(annotated_peptides = nterannot,
 print(categorized_ntermini$ntermini_category_plot)
 ```
 
-![plot of chunk unnamed-chunk-92](figure/unnamed-chunk-92-1.png)
+![plot of chunk unnamed-chunk-94](figure/unnamed-chunk-94-1.png)
