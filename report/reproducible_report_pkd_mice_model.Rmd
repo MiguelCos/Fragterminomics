@@ -1158,6 +1158,11 @@ cor.test(log2semipept2_log2protein_spec$logFC_semi_peptide,
     log2semipept2_log2protein_spec$logFC_fully_tryp_protein, method = "pearson")
 ```
 
+```{r}
+print(scatter_proteolysis_plot)
+```
+
+
 ## Analysis of differential amino acid usage (iceLogo)
 
 ```{r}

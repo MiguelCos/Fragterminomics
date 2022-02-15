@@ -2,7 +2,7 @@
 title: Large scale analysis of proteolytic processing in polycystic kidney disease
   in mice
 author: "Miguel Cosenza - Ada Seredynska"
-date: "14 February, 2022"
+date: "15 February, 2022"
 output: github_document
 ---
 
@@ -295,7 +295,7 @@ qcplot <- ggplot(quant_annot,
 print(qcplot)
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
 
 We observe that there is consistent normal distribution of abundances between samples, allowing for comparisons and further statistical processing.
 
@@ -334,7 +334,7 @@ qcplot_prots <- ggplot(quant_annot %>%
 print(qcplot_prots)
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png)
 
 We can observe that, in general, the proteins show a normal distribution in terms of their normalized abundance values after TMT integrator.
 
@@ -366,7 +366,7 @@ And plot the variance explained per component.
 plot(pca_res)
 ```
 
-![plot of chunk unnamed-chunk-19](figure/unnamed-chunk-19-1.png)
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18-1.png)
 
 \~60% of the variance based on protein abundance can be explained by components 1 and 2 after PCA.
 
@@ -409,7 +409,7 @@ ggplot(data = pca_variates,
         legend.position="bottom")
 ```
 
-![plot of chunk unnamed-chunk-21](figure/unnamed-chunk-21-1.png)
+![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)
 
 The PCA allow us to observe a striking difference in the proteome between WT and KO samples.
 
@@ -528,7 +528,7 @@ our_volcano(limma_tab,
         legend.position="bottom") 
 ```
 
-![plot of chunk unnamed-chunk-27](figure/unnamed-chunk-27-1.png)
+![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-26-1.png)
 
 In correspondence with what was observed after PCA, we see an important fraction of identified proteins as differentially expressed between the two studied phenotypes.
 
@@ -710,7 +710,7 @@ enrichpl <- enrichplot::dotplot(group_comparison_react, x = "characteristic") +
 print(enrichpl)
 ```
 
-![plot of chunk unnamed-chunk-31](figure/unnamed-chunk-31-1.png)
+![plot of chunk unnamed-chunk-30](figure/unnamed-chunk-30-1.png)
 
 We can observe that there is a differentiated biological fingerprint between KO vs WT phenotypes. Proteins up-regulated in KO are mostly markers of immune response and ECM organization, while downregulated proteins are those associated with energy metabolism.
 
@@ -750,7 +750,7 @@ qcplot_pept <- ggplot(quant_annot_pept,
 print(qcplot_pept)
 ```
 
-![plot of chunk unnamed-chunk-32](figure/unnamed-chunk-32-1.png)
+![plot of chunk unnamed-chunk-31](figure/unnamed-chunk-31-1.png)
 
 ### By Protein
 
@@ -791,7 +791,7 @@ qcplot_pept <- ggplot(quant_annot_pept %>%
 print(qcplot_pept)
 ```
 
-![plot of chunk unnamed-chunk-34](figure/unnamed-chunk-34-1.png)
+![plot of chunk unnamed-chunk-33](figure/unnamed-chunk-33-1.png)
 
 ## Annotate peptides (specificity)
 
@@ -810,21 +810,20 @@ head(pept_ident)
 
 ```
 ## # A tibble: 6 x 33
-##   peptide              prev_aa next_aa
-##   <chr>                <chr>   <chr>  
-## 1 AAAAAAAAAAAAAAAGAAG~ R       F      
-## 2 AAAAAAAAAAGAAGGR     M       G      
-## 3 AAAAAAAAGAAGGRGSGPG~ A       R      
-## 4 AAAAAAATKPAR         F       K      
-## 5 AAAAAASHLNLDALR      M       E      
-## 6 AAAAATAATKGNGGGSGR   M       V      
-## # ... with 30 more variables:
-## #   peptide_length <dbl>,
-## #   charges <chr>, probability <dbl>,
-## #   spectral_count <dbl>,
-## #   intensity <dbl>,
-## #   assigned_modifications <chr>,
-## #   observed_modifications <lgl>, ...
+##   peptide  prev_aa next_aa peptide_length charges probability spectral_count intensity
+##   <chr>    <chr>   <chr>            <dbl> <chr>         <dbl>          <dbl>     <dbl>
+## 1 AAAAAAA~ R       F                   44 5, 6          0.999              2   318955.
+## 2 AAAAAAA~ M       G                   16 2             1.00               2        0 
+## 3 AAAAAAA~ A       R                   21 2             0.904              1        0 
+## 4 AAAAAAA~ F       K                   12 3             0.993              2        0 
+## 5 AAAAAAS~ M       E                   15 2             1                  1        0 
+## 6 AAAAATA~ M       V                   18 2, 3          1                  7  9052923.
+## # ... with 25 more variables: assigned_modifications <chr>,
+## #   observed_modifications <lgl>, protein <chr>, protein_id <chr>, entry_name <chr>,
+## #   gene <chr>, protein_description <chr>, mapped_genes <chr>, mapped_proteins <chr>,
+## #   wt1 <dbl>, ko1 <dbl>, wt2 <dbl>, ko2 <dbl>, wt3 <dbl>, ko3 <dbl>, wt4 <dbl>,
+## #   ko4 <dbl>, wt5 <dbl>, ko5 <dbl>, wt6 <dbl>, mt_29 <dbl>, mt_30 <dbl>,
+## #   mt_31 <dbl>, mt_32 <dbl>, mt_33 <dbl>
 ```
 
 Get the two interesting columns and change the names.
@@ -1051,15 +1050,9 @@ set_name(pept_comb_mat)
 ```
 
 ```
-## [1] "specificity_specific"
-## [2] "specificity_semi"    
-## [3] "nterm_acetyl"        
-## [4] "nterm_tmtlab"        
-## [5] "nterm_free"          
-## [6] "semitype_Nterm"      
-## [7] "semitype_Cterm"      
-## [8] "terminal_yes"        
-## [9] "terminal_no"
+## [1] "specificity_specific" "specificity_semi"     "nterm_acetyl"        
+## [4] "nterm_tmtlab"         "nterm_free"           "semitype_Nterm"      
+## [7] "semitype_Cterm"       "terminal_yes"         "terminal_no"
 ```
 
 And now we can check the code that was assigned to each of the combinations of these elements.
@@ -1070,54 +1063,22 @@ comb_name(pept_comb_mat)
 ```
 
 ```
-##  [1] "101001010" "100101010"
-##  [3] "100100110" "100011010"
-##  [5] "100010110" "011001010"
-##  [7] "011001001" "011000101"
-##  [9] "010101010" "010101001"
-## [11] "010100110" "010100101"
-## [13] "010011010" "010011001"
-## [15] "010010110" "010010101"
-## [17] "101001000" "101000010"
-## [19] "101000001" "100101000"
-## [21] "100100100" "100100010"
-## [23] "100100001" "100011000"
-## [25] "100010100" "100010010"
-## [27] "100010001" "100001010"
-## [29] "100000110" "011001000"
-## [31] "011000100" "011000010"
-## [33] "011000001" "010101000"
-## [35] "010100100" "010100010"
-## [37] "010100001" "010011000"
-## [39] "010010100" "010010010"
-## [41] "010010001" "010001010"
-## [43] "010001001" "010000110"
-## [45] "010000101" "001001010"
-## [47] "001001001" "001000101"
-## [49] "000101010" "000101001"
-## [51] "000100110" "000100101"
-## [53] "000011010" "000011001"
-## [55] "000010110" "000010101"
-## [57] "101000000" "100100000"
-## [59] "100010000" "100001000"
-## [61] "100000100" "100000010"
-## [63] "100000001" "011000000"
-## [65] "010100000" "010010000"
-## [67] "010001000" "010000100"
-## [69] "010000010" "010000001"
-## [71] "001001000" "001000100"
-## [73] "001000010" "001000001"
-## [75] "000101000" "000100100"
-## [77] "000100010" "000100001"
-## [79] "000011000" "000010100"
-## [81] "000010010" "000010001"
-## [83] "000001010" "000001001"
-## [85] "000000110" "000000101"
-## [87] "100000000" "010000000"
-## [89] "001000000" "000100000"
-## [91] "000010000" "000001000"
-## [93] "000000100" "000000010"
-## [95] "000000001"
+##  [1] "101001010" "100101010" "100100110" "100011010" "100010110" "011001010"
+##  [7] "011001001" "011000101" "010101010" "010101001" "010100110" "010100101"
+## [13] "010011010" "010011001" "010010110" "010010101" "101001000" "101000010"
+## [19] "101000001" "100101000" "100100100" "100100010" "100100001" "100011000"
+## [25] "100010100" "100010010" "100010001" "100001010" "100000110" "011001000"
+## [31] "011000100" "011000010" "011000001" "010101000" "010100100" "010100010"
+## [37] "010100001" "010011000" "010010100" "010010010" "010010001" "010001010"
+## [43] "010001001" "010000110" "010000101" "001001010" "001001001" "001000101"
+## [49] "000101010" "000101001" "000100110" "000100101" "000011010" "000011001"
+## [55] "000010110" "000010101" "101000000" "100100000" "100010000" "100001000"
+## [61] "100000100" "100000010" "100000001" "011000000" "010100000" "010010000"
+## [67] "010001000" "010000100" "010000010" "010000001" "001001000" "001000100"
+## [73] "001000010" "001000001" "000101000" "000100100" "000100010" "000100001"
+## [79] "000011000" "000010100" "000010010" "000010001" "000001010" "000001001"
+## [85] "000000110" "000000101" "100000000" "010000000" "001000000" "000100000"
+## [91] "000010000" "000001000" "000000100" "000000010" "000000001"
 ```
 
 We can now prepare a vector of interesting intersections:
@@ -1153,7 +1114,7 @@ filtered_comb_mat <- pept_comb_mat[comb_name(pept_comb_mat) %in% interesting_com
 UpSet(filtered_comb_mat)
 ```
 
-![plot of chunk unnamed-chunk-52](figure/unnamed-chunk-52-1.png)
+![plot of chunk unnamed-chunk-51](figure/unnamed-chunk-51-1.png)
 
 Most identified peptides, as expected, are specific and non-terminal.
 
@@ -1279,7 +1240,7 @@ decreased_rec_pept <- compar_tab_interesting_pept %>%
 print(pept_semi_plotlim)
 ```
 
-![plot of chunk unnamed-chunk-60](figure/unnamed-chunk-60-1.png)
+![plot of chunk unnamed-chunk-59](figure/unnamed-chunk-59-1.png)
 
 
 ## Proportional abundance of proteolytic peptides
@@ -1372,7 +1333,7 @@ prop_abund_pept <- ggplot(pept_sum_summary,
 print(prop_abund_pept)
 ```
 
-![plot of chunk unnamed-chunk-64](figure/unnamed-chunk-64-1.png)
+![plot of chunk unnamed-chunk-63](figure/unnamed-chunk-63-1.png)
 
 ### Generate plot of sum of abundances semi-specific peptides
 
@@ -1413,7 +1374,7 @@ sum_semi_abunds <- ggplot(pept_summary_semi_1,
 print(sum_semi_abunds)
 ```
 
-![plot of chunk unnamed-chunk-66](figure/unnamed-chunk-66-1.png)
+![plot of chunk unnamed-chunk-65](figure/unnamed-chunk-65-1.png)
 
 ## Comparative analysis of semi-specific peptides vs protein abundance
 
@@ -1512,12 +1473,10 @@ cor.test(log2semipept2_log2protein_spec$logFC_semi_peptide,
 
 ```
 ## 
-## 	Pearson's product-moment
-## 	correlation
+## 	Pearson's product-moment correlation
 ## 
 ## data:  log2semipept2_log2protein_spec$logFC_semi_peptide and log2semipept2_log2protein_spec$logFC_fully_tryp_protein
-## t = 63.588, df = 1426, p-value <
-## 2.2e-16
+## t = 63.588, df = 1426, p-value < 2.2e-16
 ## alternative hypothesis: true correlation is not equal to 0
 ## 95 percent confidence interval:
 ##  0.8456566 0.8727600
@@ -1525,6 +1484,14 @@ cor.test(log2semipept2_log2protein_spec$logFC_semi_peptide,
 ##       cor 
 ## 0.8598128
 ```
+
+
+```r
+print(scatter_proteolysis_plot)
+```
+
+![plot of chunk unnamed-chunk-71](figure/unnamed-chunk-71-1.png)
+
 
 ## Analysis of differential amino acid usage (iceLogo)
 
