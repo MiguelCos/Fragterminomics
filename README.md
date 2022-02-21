@@ -6,7 +6,7 @@ output: github_document
 
 
 
-# fragNterminomics
+# Fragterminomics
 
 <!-- badges: start -->
 <!-- badges: end -->
