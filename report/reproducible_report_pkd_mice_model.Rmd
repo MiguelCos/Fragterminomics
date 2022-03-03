@@ -47,12 +47,12 @@ theme_set(theme(axis.text.x = element_text(hjust = 0.5, vjust = 0, size = 6,
 __Installation__
 
 ```{r results='hide'}
-devtools::install_github("MiguelCos/fragNterminomics")
+devtools::install_github("MiguelCos/Fragterminomics")
 ```
 __Loading__
 
 ```{r results='hide'}
-library(fragNterminomics)
+library(Fragterminomics)
 ```
 
 # General experimental information
@@ -1293,8 +1293,26 @@ n_counts_comb <- count_location_nterm(nterm_annot = nterannot)
 ```
 
 ```{r}
+n_norm_locat_tmt <- n_counts_comb$count_info_tmtneo %>%
+                                        dplyr::count(normalized_location = as.factor(normalized_location)) %>%
+                                        mutate(`N-term type` = "TMT-term",
+                                               `Feature`= "Normalized location",
+                                               normalized_location = fct_reorder(normalized_location, as.numeric(normalized_location), .desc = FALSE)) #%>%
+         #           filter(as.numeric(normalized_location) > 9)
+
+sum(n_norm_locat_acet$n)
+
+```
+
+
+```{r}
 print(n_counts_comb$plot_aa_before)
 ```
+
+```{r}
+ggsave(filename = "")
+```
+
 
 ```{r fig.height=10, fig.width=6}
 print(n_counts_comb$plot_normalized_location)
