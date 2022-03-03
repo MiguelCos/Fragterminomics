@@ -40,11 +40,11 @@ nterm_annotated <- peptidestsv %>%
                     mutate(tmt_tag = case_when(str_detect(assigned_modifications, nterm_tmt) ~ "nterm",
                                                str_detect(assigned_modifications, ktmt) ~ "lysine",
                                                str_detect(assigned_modifications, ktmt,
-                                                          negate = TRUE) & str_detect(assigned_modifications, "N-term\\(42.0106\\)") ~ "untagged_acetylated",
+                                                          negate = TRUE) & str_detect(assigned_modifications, "N-term\\(42.0106\\)") ~ "untagged",
                                                str_detect(assigned_modifications, ktmt,
-                                                          negate = TRUE) & nterm == "acetylated" ~ "untagged_acetylated",
+                                                          negate = TRUE) & nterm == "acetylated" ~ "untagged",
                                                str_detect(assigned_modifications, ktmt,
-                                                          negate = TRUE) & nterm == "free" ~ "untagged_free",
+                                                          negate = TRUE) & nterm == "free" ~ "untagged",
                                                TRUE ~ "untagged"))
 
 return(nterm_annotated)

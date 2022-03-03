@@ -46,7 +46,9 @@ count_location_nterm <- function(nterm_annot){
                                         dplyr::count(normalized_location = as.factor(normalized_location)) %>%
                                         mutate(`N-term type` = "Acetylated",
                                                `Feature`= "Normalized location",
-                                               normalized_location = fct_reorder(normalized_location, as.numeric(normalized_location), .desc = FALSE))
+                                               normalized_location = fct_reorder(normalized_location,
+                                                                                 as.numeric(normalized_location),
+                                                                                 .desc = FALSE))
 
 
                     ### how many times do we have a specific 'AA before' from TMT N-term ----

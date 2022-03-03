@@ -39,7 +39,6 @@ get_cleave_area <- function(peptide_annotation){
                                         mutate(cleave_area = paste0(prev_10_pad, Peptide, following_10_pad)) %>%
                                         mutate(cleave_area20 = str_sub(cleave_area,
                                                                        -20)) %>%
-                                        #mutate(cleave_area20)
                                         mutate(len_20 = str_count(cleave_area20),
                                                len_clearea = str_count(cleave_area),
                                                len_follow = str_count(following_10_resid),

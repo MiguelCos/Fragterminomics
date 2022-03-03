@@ -6,7 +6,7 @@ output: github_document
 
 
 
-# Fragterminomics
+# fragNterminomics
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -18,7 +18,7 @@ A data analysis approach for extracting information related to proteolytic activ
 You can install the development version of fragNterminomics by typing:
 
 ``` r
-devtools::install_github("MiguelCos/Fragterminomics")
+devtools::install_github("MiguelCos/fragNterminomics")
 ```
 
 ## Usability example: 

@@ -23,12 +23,25 @@ categorize_nterm <- function(annotated_peptides,
 
                     # prepare protein_nter data frame
 
-                    protein_nter <- nterannot %>%
+                    protein_semitmt <- nterannot %>%
                                         dplyr::select(protein_id, peptide, nterm, semi_type, specificity,
                                                       is_terminal, last_aa, aa_before, start_position, end_position) %>%
-                                        dplyr::filter(str_detect(protein_id, pattern = "Biognosys", negate = TRUE),
+                                        dplyr::filter(str_detect(protein_id,
+                                                                 pattern = "Biognosys",
+                                                                 negate = TRUE),
                                                       specificity == "semi_specific",
-                                                      nterm %in% c("TMT-labelled", "acetylated"))
+                                                      nterm %in% c("TMT-labelled"))
+
+                    protein_acetyl <- nterannot %>%
+                                        dplyr::select(protein_id, peptide, nterm, semi_type, specificity,
+                                                      is_terminal, last_aa, aa_before, start_position, end_position) %>%
+                                        dplyr::filter(str_detect(protein_id,
+                                                                 pattern = "Biognosys",
+                                                                 negate = TRUE),
+                                                      nterm %in% c("acetylated"))
+
+                    protein_nter <- bind_rows(protein_semitmt,
+                                              protein_acetyl)
 
                     # vector of interesting feature types as annotated by the uniprot API
                     mol_processing_feat <- c("CHAIN",
@@ -47,8 +60,7 @@ categorize_nterm <- function(annotated_peptides,
 
                     nter_pepts_n_feat <- left_join(protein_nter,
                                                    df_mol_proc_feat,
-                                                   by = "protein_id") %>%
-                                        distinct()
+                                                   by = "protein_id")
 
                     # match semi-specific cleavage position of peptide vs end position of annotated processing site
 
@@ -79,6 +91,21 @@ categorize_nterm <- function(annotated_peptides,
                                                       start_position, end_position,
                                                       begin, end, nterm)
 
+                    # filter to keep one peptide sequence per feature
+
+                    pept_wmatch <- categ2_pept_canannot %>%
+                                        filter(match_type != "none")
+
+                    pept_womatch <- categ2_pept_canannot %>%
+                                        filter(match_type == "none",
+                                               !peptide %in% pept_wmatch$peptide) %>%
+                                        distinct(peptide, protein_id,
+                                                 match_locat, match_type,
+                                                 .keep_all = TRUE)
+
+                    categ2_pept_canannot <- bind_rows(pept_wmatch, pept_womatch) %>%
+                                        mutate(is_duplicated = duplicated(peptide))
+
                     # tabular counts of matching locations
 
                     count_matches <- categ2_pept_canannot %>%
@@ -93,8 +120,8 @@ categorize_nterm <- function(annotated_peptides,
                                         coord_flip() +
                                         geom_bar(stat = "identity") +
                                         geom_text(aes(label = n), hjust = 1, size = 5) +
-                                        facet_grid(nterm~match_locat, scales = "free") +
-                                        labs(title = "Nr of Nterminal peptides by their annotated category in Uniprot")+
+                                        facet_grid(nterm~., scales = "free") +
+                                        labs(title = "Nr of Nterminal peptides by their annotated category in Uniprot") +
                                         labs(y = "Number of Peptides by matching type",
                                              x = "Type of matching processing information")+
                                         theme(axis.text.x = element_text(hjust = 0.5, vjust = 0.1, size = 10),
