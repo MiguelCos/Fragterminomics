@@ -1,10 +1,11 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
-  - family-names: Cosenza-Contreras, Seredynska
-    given-names: Miguel, Adrianna
-    orcid:https://orcid.org/0000-0002-9727-3229
+  - family-names: "Cosenza-Contreras", "Seredynska"
+    given-names: "Miguel", "Adrianna"
+    orcid: "https://orcid.org/0000-0002-9727-3229"
 title: "Fragterminomics"
 version: 1.0.0
-doi: 
+doi:
 date-released: 2022-02-01
+url: "https://github.com/MiguelCos/Fragterminomics"
