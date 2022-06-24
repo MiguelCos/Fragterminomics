@@ -21,13 +21,13 @@ __Installation__
 
 
 ```r
-devtools::install_github("MiguelCos/fragNterminomics")
+devtools::install_github("MiguelCos/Fragterminomics")
 ```
 __Loading__
 
 
 ```r
-library(fragNterminomics)
+library(Fragterminomics)
 ```
 
 # General experimental information
