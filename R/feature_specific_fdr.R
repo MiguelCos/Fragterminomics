@@ -12,7 +12,6 @@
 feature_fdr_correction <- function(toptable,
                                    interesting_features_table,
                                    method = "BH"){
-
     require(dplyr)
 
    # merge limma output with feature annotation  ----
@@ -20,7 +19,7 @@ feature_fdr_correction <- function(toptable,
    # the right join allows for both filtering to keep only the interesting
    # features from the toptable and merge with the features table
 
-   tab_limma_feature_annot <- right_join(limma_pept_tab,
+   tab_limma_feature_annot <- right_join(toptable,
                                          interesting_features,
                                          by = c("peptide","index")) %>%
                        # apply FDR correction only on the subset
@@ -29,7 +28,7 @@ feature_fdr_correction <- function(toptable,
                        mutate(fdr_correction = 'feature-specific')
 
    # create a table of non-interesting features containing the globally adjusted p-values ----
-   tablimma_subsetout <- filter(limma_pept_tab,
+   tablimma_subsetout <- filter(toptable,
                                 !index %in% interesting_features$index) %>%
                        mutate(fdr_correction = 'global')
 
