@@ -27,9 +27,14 @@ if (tmtmass == 304.2072){
                     nterm_tmt <- "N-term\\(229.1629\\)"
                     ktmt <- "K\\(229.1629\\)"
 
+} else if (tmtmass == 304.2071){
+
+                    nterm_tmt <- "N-term\\(304.2071\\)"
+                    ktmt <- "K\\(304.20721\\)"
+
 } else {
 
-                    error("Please check your tmtmass argument input.")
+                    errorCondition("Please check your tmtmass argument input.")
 
 }
 
