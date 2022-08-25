@@ -11,6 +11,6 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 2.10)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 URL: https://github.com/MiguelCos/Fragterminomics
 BugReports: https://github.com/MiguelCos/Fragterminomics/issues

@@ -23,7 +23,7 @@ categorize_nterm <- function(annotated_peptides,
 
                     # prepare protein_nter data frame
 
-                    protein_semitmt <- nterannot %>%
+                    protein_semitmt <- annotated_peptides %>%
                                         dplyr::select(protein_id, peptide, nterm, semi_type, specificity,
                                                       is_terminal, last_aa, aa_before, start_position, end_position) %>%
                                         dplyr::filter(str_detect(protein_id,
@@ -32,7 +32,7 @@ categorize_nterm <- function(annotated_peptides,
                                                       specificity == "semi_specific",
                                                       nterm %in% c("TMT-labelled"))
 
-                    protein_acetyl <- nterannot %>%
+                    protein_acetyl <- annotated_peptides %>%
                                         dplyr::select(protein_id, peptide, nterm, semi_type, specificity,
                                                       is_terminal, last_aa, aa_before, start_position, end_position) %>%
                                         dplyr::filter(str_detect(protein_id,
