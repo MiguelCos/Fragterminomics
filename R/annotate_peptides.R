@@ -197,8 +197,8 @@ annotation <-  annotation %>%
                            is_terminal = if_else(general_position == "not_terminal",
                                                  true = "not_terminal",
                                                  false = "terminal")) %>%
-                    mutate(semi_type = case_when(semi_type == "unspecific" & general_position == "Nterm_peptide" ~ "semi_Nterm",
-                                                 semi_type == "unspecific" & general_position == "Cterm_peptide" ~ "semi_Cterm",
+                    mutate(semi_type = case_when(semi_type == "unspecific" & general_position == "Nterm_peptide" ~ "semi_Cterm",
+                                                 semi_type == "unspecific" & general_position == "Cterm_peptide" ~ "semi_Nterm",
                                                  TRUE ~ semi_type))
 
 return(annotation)
