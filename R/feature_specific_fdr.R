@@ -20,12 +20,10 @@ feature_fdr_correction <- function(toptable,
    # features from the toptable and merge with the features table
 
    tab_limma_feature_annot <- right_join(toptable,
-                                         interesting_features,
-                                         by = c("peptide","index")) %>%
-                       # apply FDR correction only on the subset
+                                         interesting_features_table) %>%
                        mutate(adj.P.Val = p.adjust(p = P.Value,
-                                                   method = "BH")) %>%
-                       mutate(fdr_correction = 'feature-specific')
+                                                   method = method)) %>%
+                       mutate(fdr_correction = "feature-specific")
 
    # create a table of non-interesting features containing the globally adjusted p-values ----
    tablimma_subsetout <- filter(toptable,
