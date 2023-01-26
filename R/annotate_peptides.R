@@ -1,7 +1,7 @@
 #' Annotate peptides based on their enzyme specificity and position within protein sequence.
-#'
+#' 
 #' @param peptide2protein A data frame with at least two columns: `Peptide` (peptide sequence to annotate) and `Genes` (Uniprot ID of associated protein).
-#' @param fasta A list of identified protein sequences, at least matching the ones present in the `peptide2protein` data frame. This list should should be loaded into R with the `read.fasta` function from the `seqinr` package.
+#' @param fasta A list of identified protein sequences, at least matching the ones present in the `peptide2protein` data frame. This list should should be loaded into R with the `read.fasta` function from the `seqinr` package. You need to set the argument as.string=TRUE.
 #' @param decoy_tag A string with the tag of the decoy sequences.
 #' @param specificity A string defining the enzyme specificity.
 #'
