@@ -12,9 +12,6 @@ A data frame with 30879 rows and 33 variables:
   \item{condition}{Condition}
 }
 }
-\source{
-
-}
 \usage{
 sample_annotation
 }

@@ -38,9 +38,6 @@ A data frame with 5986 rows and 41 variables:
   \item{mt_*}{Raw intensity values of empty TMT channels}
 }
 }
-\source{
-
-}
 \usage{
 prot_ident
 }

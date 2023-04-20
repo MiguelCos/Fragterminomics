@@ -27,7 +27,7 @@ feature_fdr_correction <- function(toptable,
 
    # create a table of non-interesting features containing the globally adjusted p-values ----
    tablimma_subsetout <- filter(toptable,
-                                !index %in% interesting_features$index) %>%
+                                !index %in% interesting_features_table$index) %>%
                        mutate(fdr_correction = 'global')
 
    output_limma <- bind_rows(tab_limma_feature_annot,

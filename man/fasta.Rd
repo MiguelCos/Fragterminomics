@@ -7,9 +7,6 @@
 \format{
 A list 5986 elements, each represents a protein sequence identified in the Polycystic Disease mouse model experiment.
 }
-\source{
-
-}
 \usage{
 fasta
 }

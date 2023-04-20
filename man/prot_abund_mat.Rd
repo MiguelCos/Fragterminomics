@@ -15,9 +15,6 @@ A data frame with 5238 rows and 21 variables:
   \item{mt_*}{Normalized intensity values of empty TMT channels}
 }
 }
-\source{
-
-}
 \usage{
 prot_abund_mat
 }

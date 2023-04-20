@@ -27,9 +27,6 @@ A data frame with 30879 rows and 33 variables:
   \item{mt_*}{Raw intensity values of empty TMT channels}
 }
 }
-\source{
-
-}
 \usage{
 pept_ident
 }
