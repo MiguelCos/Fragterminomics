@@ -19,7 +19,7 @@ peptide2protein_normalization(
 \item{peptide_annot}{peptide annotation with specificity information. As it comes from merging the outputs from the functions `annotate_peptides` and `psmtsv_to_modified_peptides`}
 }
 \value{
-Data frame of log2 transformed and median-centered peptides abundances corrected by their representative abundance among its correspondent protein abundance based on specific peptides
+List with four elements:
 }
 \description{
 Takes information of protein intensity and peptide intensity and perform normalization of peptide abundance based on protein abundance.

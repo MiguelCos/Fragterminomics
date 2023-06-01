@@ -2,7 +2,7 @@ Package: Fragterminomics
 Type: Package
 Title: Annotation and processing of peptides from FragPipe search results
 Version: 0.1.0
-Authors@R: person("Miguel", "Cosenza", email = "migueljcc5@gmail.com",
+Authors@R: person("Miguel", "Cosenza-Contreras", email = "migueljcc5@gmail.com",
                   role = c("aut", "cre"))
 Maintainer: Miguel Cosenza-Contreras <migueljcc5@gmail.com>
 Description: Data analysis approach for the annotation, and differential analysis of proteolytic products (i.e. semi-specific peptides) from shotgun proteomics search results.
@@ -11,6 +11,6 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 2.10)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 URL: https://github.com/MiguelCos/Fragterminomics
 BugReports: https://github.com/MiguelCos/Fragterminomics/issues

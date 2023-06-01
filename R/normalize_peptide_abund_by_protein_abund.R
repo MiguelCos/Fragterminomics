@@ -6,7 +6,7 @@
 #' @param annot Data frame obtained from loading the `annotation.txt` from Fragpipe output. First column should be named `channel` and second column should be named `sample`.
 #' @param peptide_annot peptide annotation with specificity information. As it comes from merging the outputs from the functions `annotate_peptides` and `psmtsv_to_modified_peptides`
 #' @param summarize_by_specificity
-#' @return Data frame of log2 transformed and median-centered peptides abundances corrected by their representative abundance among its correspondent protein abundance based on specific peptides
+#' @return List with four elements:
 #' @examples
 #'
 #' @export
@@ -50,10 +50,11 @@ if (summarize_by_specificity == TRUE){
 specific_peptides <- peptide_annot %>%
                     filter(specificity == "specific") %>%
                     pull(protein_id_modif_pep)
+
 prots_q <- peptides %>%
                     # keep only unique peptides/PSMs
                     filter(`Is Unique` == TRUE,
-                           # keep only specific peptides
+                    # keep only specific peptides
                            protein_id_modif_pep %in% specific_peptides) %>%
                     dplyr::select(`Protein ID`,
                                   `Modified Peptide`,
@@ -109,7 +110,9 @@ df_q <- psm_n_prots %>%
                     dplyr::select(protein_id_modif_pep, starts_with(col)) %>%
                     # reorganize the column of intensities, so first we have peptide abundances and then proteins
                     dplyr::relocate(protein_id_modif_pep, ends_with("peptide"), ends_with("prot"))
+
 df_q_names <- colnames(df_q) # extract column names
+
 df_q_rat <- df_q %>%
                     # create a column for each sample to get the fraction of the peptide intensity representative of the protein abundance
                     mutate({{col}} := .data[[df_q_names[2]]] / .data[[df_q_names[3]]]) %>%
@@ -181,11 +184,17 @@ scaled_mat_rat3 <- scale(log2_mat_rat3,
 
 # create list of results ----
 
-protein_normalized_pepts <- list(protein_normalized_pepts_scaled = scaled_mat_rat2,
-                                 protein_normalized_pepts_abundance = pept2prot_norm_ratio,
-                                 summarized_protein_abundance = prots_q,
-                                 summarized_protein_abundance_scaled = scaled_mat_rat3,
-                                 summarize_by_specificity = summarize_by_specificity)
+protein_normalized_pepts <- list(
+                    # matrix of peptide abundances scaled, after extracting fraction of peptide/protein fraction of abundance
+                    protein_normalized_pepts_scaled = scaled_mat_rat2,
+                    # matrix of peptide abundances non-scaled, after extracting fraction of peptide/protein fraction of abundance
+                    protein_normalized_pepts_abundance = pept2prot_norm_ratio,
+                    # summarized protein abundances based on peptide matrix
+                    summarized_protein_abundance = prots_q,
+                    # summarized protein abundances based on peptide matrix, scaled
+                    summarized_protein_abundance_scaled = scaled_mat_rat3,
+                    # object showing if the protein abundances were summarized by tryptic peptides
+                    summarize_by_specificity = summarize_by_specificity)
 
 return(protein_normalized_pepts)
 }
