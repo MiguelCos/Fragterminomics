@@ -16,7 +16,7 @@
 #' @examples
 categorize_nterm <- function(annotated_peptides,
                              uniprot_features,
-                             nterm = c("TMT-labelled", "acetylated")){
+                             distinct = TRUE){
 
                     require(dplyr)
                     require(ggplot2)
@@ -44,23 +44,22 @@ categorize_nterm <- function(annotated_peptides,
                                               protein_acetyl)
 
                     # vector of interesting feature types as annotated by the uniprot API
-                    mol_processing_feat <- c("CHAIN",
-                                             "INIT_MET",
-                                             "PEPTIDE",
+                    mol_processing_feat <- c("INIT_MET",
                                              "PROPEP",
                                              "SIGNAL",
                                              "TRANSIT")
 
-                    df_uniprot_features <- bind_rows(df_uniprot_features)
+                    upfeat <- bind_rows(uniprot_features)
 
-                    df_mol_proc_feat <- df_uniprot_features %>%
-                                        filter(type %in% mol_processing_feat, # keep only interesting features
+                    df_mol_proc_feat <- upfeat %>%
+                                        dplyr::filter(type %in% mol_processing_feat, # keep only interesting features
                                                !is.na(length)) %>% # exclude features with missing values
                                         dplyr::rename(protein_id = accession)  # change column name
 
                     nter_pepts_n_feat <- left_join(protein_nter,
                                                    df_mol_proc_feat,
-                                                   by = "protein_id")
+                                                   by = "protein_id",
+                                                   relationship = "many-to-many")
 
                     # match semi-specific cleavage position of peptide vs end position of annotated processing site
 
@@ -68,7 +67,7 @@ categorize_nterm <- function(annotated_peptides,
                                         mutate(matches_start = case_when(semi_type == "semi_Nterm" & abs(as.numeric(start_position) - end) < 4 ~ TRUE,
                                                                          semi_type == "semi_Cterm" & abs(as.numeric(end_position) - end) < 4 ~ TRUE,
                                                                          TRUE ~ FALSE)) %>%
-                                        filter(!is.na(matches_start)) # eliminate proteins with no processing features annotated
+                                        dplyr::filter(!is.na(matches_start)) # eliminate proteins with no processing features annotated
 
                     # categorize matching locations
 
@@ -89,28 +88,63 @@ categorize_nterm <- function(annotated_peptides,
                                         dplyr::select(peptide, protein_id,
                                                       match_locat, match_type,
                                                       start_position, end_position,
-                                                      begin, end, nterm)
+                                                      begin, end, nterm, specificity, aa_before)
 
-                    # filter to keep one peptide sequence per feature
+                     # filter to keep one peptide sequence per feature
+                     pept_wmatch <- categ2_pept_canannot %>%
+                       dplyr::filter(
+                         match_type != "none"
+                       ) 
+                       
+                       if(distinct == TRUE){
 
-                    pept_wmatch <- categ2_pept_canannot %>%
-                                        filter(match_type != "none")
+                         pept_wmatch <- pept_wmatch %>%
+                           distinct(
+                             peptide,
+                             protein_id,
+                             match_locat,
+                             match_type,
+                             .keep_all = TRUE
+                           )
 
+                       } else {
+
+                         pept_wmatch <- pept_wmatch
+                       
+                       }
+                                                           
                     pept_womatch <- categ2_pept_canannot %>%
-                                        filter(match_type == "none",
-                                               !peptide %in% pept_wmatch$peptide) %>%
+                                        dplyr::filter(!peptide %in% pept_wmatch$peptide) %>%
                                         distinct(peptide, protein_id,
                                                  match_locat, match_type,
                                                  .keep_all = TRUE)
 
-                    categ2_pept_canannot <- bind_rows(pept_wmatch, pept_womatch) %>%
-                                        mutate(is_duplicated = duplicated(peptide))
+                    categ2_pept_canannot <- bind_rows(pept_wmatch, 
+                                                      pept_womatch) %>%
+                                        mutate(is_duplicated = duplicated(peptide)) %>%
+    # change the definition of the match type
+    # to define specific peptides
+    mutate(
+      match_type = case_when(
+        specificity == "specific" ~ "specific_peptide",
+        TRUE ~ match_type
+      ),
+      match_locat = case_when(
+        specificity == "specific" ~ "specific_peptide",
+        TRUE ~ match_locat
+      )
+    ) %>%
+    mutate(
+      match_type = case_when(
+        match_type == "INIT_MET" & aa_before == "M" & start_position == 2 ~ "INIT_MET",
+        TRUE ~ match_type
+      ),
+    )
 
                     # tabular counts of matching locations
 
                     count_matches <- categ2_pept_canannot %>%
-                                        dplyr::count(match_locat,
-                                                     match_type,
+                                        dplyr::count(match_type,
                                                      nterm)
 
                     # visualize counts of categorized Nterm identifications
@@ -128,7 +162,7 @@ categorize_nterm <- function(annotated_peptides,
                                               axis.text.y = element_text(hjust = 0.5, size = 10),
                                               panel.background = element_blank(),
                                               panel.grid.major = element_line(color = "grey"),
-                                              panel.border = element_rect(colour = "black", fill=NA, size=1.5),
+                                              panel.border = element_rect(colour = "black", fill=NA, linewidth=1.5),
                                               axis.title=element_text(size=12,face="bold"))
 
                     # store intermediary outputs into a list object

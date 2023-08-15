@@ -2,3 +2,9 @@
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^data-raw$
+^scr$
+^results$
+^\.vscode$
+^\.gitignore$
+^\.git$
+

@@ -1,7 +1,7 @@
 Package: Fragterminomics
 Type: Package
 Title: Annotation and processing of peptides from FragPipe search results
-Version: 0.1.0
+Version: 0.2.2
 Authors@R: person("Miguel", "Cosenza-Contreras", email = "migueljcc5@gmail.com",
                   role = c("aut", "cre"))
 Maintainer: Miguel Cosenza-Contreras <migueljcc5@gmail.com>

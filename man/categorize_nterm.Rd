@@ -4,11 +4,7 @@
 \alias{categorize_nterm}
 \title{Categorize and count N-terminal peptides based on Uniprot processing annotation}
 \usage{
-categorize_nterm(
-  annotated_peptides,
-  uniprot_features,
-  nterm = c("TMT-labelled", "acetylated")
-)
+categorize_nterm(annotated_peptides, uniprot_features, distinct = TRUE)
 }
 \arguments{
 \item{annotated_peptides}{data frame of annotated peptides. The output of the `annotate_nterm` function.}
