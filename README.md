@@ -22,4 +22,4 @@ devtools::install_github("MiguelCos/Fragterminomics")
 
 You can find an use case of this workflow, together with experimental
 and data analysis description in the following
-[here](https://github.com/MiguelCos/Fragterminomics/blob/master/reproducible_report_pkd_mice_model.md)
+[here](https://github.com/MiguelCos/Fragterminomics/blob/master/terminomics_analysis_workflow.md)
