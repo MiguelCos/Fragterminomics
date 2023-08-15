@@ -21,5 +21,5 @@ devtools::install_github("MiguelCos/Fragterminomics")
 ## Usability example:
 
 You can find an use case of this workflow, together with experimental
-and data analysis description in the following
+and data analysis description in the following link
 [here](https://github.com/MiguelCos/Fragterminomics/blob/master/terminomics_analysis_workflow.md)
