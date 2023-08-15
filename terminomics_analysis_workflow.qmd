@@ -330,10 +330,6 @@ categorized_termnini <- categorize_nterm(annotated_peptides = nterannot,
                                          distinct = TRUE)
 ```
 
-```{r}
-categorize_nterm
-```
-
 # Visualization of N-termini counts by Uniprot-annotated processing type
 
 ```{r}
