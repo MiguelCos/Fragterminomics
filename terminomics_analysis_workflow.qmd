@@ -72,6 +72,7 @@ library(DEP)
 library(SummarizedExperiment)
 library(dagLogo)
 library(pheatmap)
+library(RColorBrewer)
 ```
 
 __Required data__
@@ -898,7 +899,8 @@ Finally we can use the `pheatmap` package to generate a heatmap visualization of
 pheatmap(upregulated_cleavage_area_counts$amino_acid_count, 
         cluster_rows = FALSE,
         cluster_cols = FALSE,
-        main = "AA Counts - Based on increased proteolytic producs in KO")
+        main = "AA Counts - Based on increased proteolytic producs in KO",
+        color = colorRampPalette(brewer.pal(n = 9, name = "Reds"))(100))
 ```
 
 We see that several of our up-regulated proteolytic products contain C or S at the P1 position.
