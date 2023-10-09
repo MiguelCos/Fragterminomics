@@ -101,6 +101,15 @@ Miguel Cosenza-Contreras and Adrianna Seredynska
   id="toc-analysis-of-proteolytic-patterns-from-differential-proteolysis"><span
   class="toc-section-number">15</span> Analysis of proteolytic patterns
   from differential proteolysis</a>
+- <a href="#comparative-analysis-of-neo-termini-vs-protein-abundance"
+  id="toc-comparative-analysis-of-neo-termini-vs-protein-abundance"><span
+  class="toc-section-number">16</span> Comparative analysis of neo-termini
+  vs protein abundance</a>
+  - <a
+    href="#scatter-plot-of-log2-fold-changes-of-neo-termini-vs-protein-abundance"
+    id="toc-scatter-plot-of-log2-fold-changes-of-neo-termini-vs-protein-abundance"><span
+    class="toc-section-number">16.1</span> Scatter plot of log2-fold changes
+    of neo-termini vs protein abundance</a>
 
 # Background and general description of the data analysis approach
 
@@ -195,6 +204,7 @@ library(DEP)
 library(SummarizedExperiment)
 library(dagLogo)
 library(pheatmap)
+library(RColorBrewer)
 ```
 
 **Required data**
@@ -273,6 +283,12 @@ modif_peptides <- psmtsv_to_modified_peptides(psms = psm_tsv,
                                               annot = sample_annotation3, 
                                               peptide_probability = 0.9,
                                               minimal_purity = 0.5)
+
+# generate a data frame mapping protein IDs to genes
+prot2gene <- modif_peptides %>%
+  dplyr::select(Protein = `Protein ID`, 
+                Gene = Gene,
+                Description = `Protein Description`)
 ```
 
 ## Correction for isobaric impurity and median centering the reporter ion intensities
@@ -426,7 +442,7 @@ ggplot(annot_counts_v2,
        fill = "Semi-specificity")
 ```
 
-![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-13-1.png)
+![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-13-1.png)
 
 # Annotation of protein termini by Uniprot-annotated processing information
 
@@ -508,7 +524,7 @@ categorized_termnini <- categorize_nterm(annotated_peptides = nterannot,
 print(categorized_termnini$ntermini_category_plot)
 ```
 
-![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-18-1.png)
+![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-18-1.png)
 
 # Quantitative analysis of Semi-specific peptides
 
@@ -666,7 +682,7 @@ ggplot(pept_summ_rawpur_semi_3,
        title = "%Tot. semis/Tot. all") 
 ```
 
-![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-23-1.png)
+![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-23-1.png)
 
 # Differential abundance analysis of semi-specific peptides (without protein-level normalization)
 
@@ -1070,7 +1086,7 @@ cowplot::plot_grid(volcano_limma4,
                    nrow = 1)
 ```
 
-![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-46-1.png)
+![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-46-1.png)
 
 We can observe that only keep 513 proteolytic products as differentially
 abundant after normalization by protein abundance. We consider these as
@@ -1139,10 +1155,241 @@ visualization of amino acid usage at the cleavage site.
 pheatmap(upregulated_cleavage_area_counts$amino_acid_count, 
         cluster_rows = FALSE,
         cluster_cols = FALSE,
-        main = "AA Counts - Based on increased proteolytic producs in KO")
+        main = "AA Counts - Based on increased proteolytic producs in KO",
+        color = colorRampPalette(brewer.pal(n = 9, name = "Reds"))(100))
 ```
 
-![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-51-1.png)
+![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-51-1.png)
 
 We see that several of our up-regulated proteolytic products contain C
 or S at the P1 position.
+
+# Comparative analysis of neo-termini vs protein abundance
+
+After differential abundance analysis of proteolytic products, we can
+compare the abundance of neo-termini with the abundance of the proteins
+they belong to. This can give us clues into the behavior of the
+proteolytic products in the context of the protein abundance, and help
+us to identify proteolytic products that are differentially abundant due
+to differential proteolysis, from those that are differentially abundant
+due to differential protein abundance.
+
+We start by extracting the protein abundance information from the
+`protein_normalized_peptides` object, and then extracting log2-fold
+changes of protein abundance between conditions.
+
+The sub-object `summarized_protein_abundance_scaled` contains a matrix
+of scaled/normalized protein abundances calculated based on the
+abundances of unique fully-specific peptides. These would better
+represent the abundance of the proteins, by avoiding the inclusion of
+semi-specific peptides that might be affected by differential
+proteolysis.
+
+``` r
+log2FCs_proteins <- protein_normalized_peptides$summarized_protein_abundance_scaled %>%
+                    # exclude columns representing empty TMT channels
+                    dplyr::select(-matches("MT")) %>%
+                    # reformat the data frame into a long format
+                    pivot_longer(cols = ends_with("_prot"),
+                                 names_to = "sample",
+                                 values_to = "Abundance") %>%
+                    # define sample and condition names for each quant observation per protein
+                    mutate(sample = str_remove(sample,
+                                               "_prot")) %>%
+                    mutate(condition = str_remove(sample,
+                                                  "[0-9]")) %>% 
+                    dplyr::rename(Protein = protein_id) %>%
+                    group_by(Protein, condition) %>% 
+                    # calculate the median abundance per protein per condition
+                    summarise(median_abundance = median(Abundance, na.rm = TRUE)) %>%
+                    ungroup() %>%
+                    # reformat into wide format
+                    pivot_wider(id_cols = c("Protein"),
+                                values_from = median_abundance, 
+                                names_from = condition) %>%
+                    # merge with gene name annotation
+                    left_join(., prot2gene) %>%
+                    distinct() %>%
+                    # calculate the logFC of protein abundance between conditions
+                    mutate(logFC_fully_tryp_protein = log2(KO)-log2(WT))
+```
+
+We continue by extracting the neo-termini abundance information from the
+`protein_normalized_peptides` object, and then extracting log2-fold
+changes of neo-termini abundance between conditions.
+
+The sub-object `protein_normalized_pepts_scaled` contains a matrix of
+scaled/normalized neo-termini abundances normalized by protein abundance
+(the latter calculated from fully-tryptic peptides). These would better
+represent the abundance of the neo-termini, by correcting for the
+abundance of the proteins they belong to, and would help better to make
+inferences in terms of differential proteolysis.
+
+``` r
+log2FCs_peptides <- protein_normalized_peptides$protein_normalized_pepts_scaled %>%
+                    # exclude columns representing empty TMT channels
+                    dplyr::select(-matches("_MT")) %>%
+                    # reformat the data frame into a long format
+                    pivot_longer(cols = starts_with("fraction_int_pept"),
+                                 names_to = "sample",
+                                 values_to = "Abundance") %>%
+                    # define sample and condition names for each quant observation per protein
+                    mutate(sample = str_remove(sample,
+                                               "fraction_int_peptide2prot_")) %>%
+                    mutate(condition = str_remove(sample,
+                                                  "[0-9]")) %>% 
+                    # generate coolumns mapping modified peptides and protein IDs
+                    separate(protein_id_modif_pep, 
+                             into = c("Protein", "modified_peptide"), 
+                             sep = "\\_", 
+                             remove = FALSE) %>% 
+                    # summarize median abundance per modified peptide per condition
+                    group_by(Protein, modified_peptide, condition) %>% 
+                    summarise(median_abundance = median(Abundance, na.rm = TRUE)) %>%
+                    ungroup() %>%
+                    # reformat into wide format
+                    pivot_wider(id_cols = c("Protein", "modified_peptide"),
+                                values_from = median_abundance, 
+                                names_from = condition) %>%
+                    # merge with gene name annotation
+                    left_join(., prot2gene) %>%
+                    distinct() %>%
+                    # generate a column with the logFC of neo-termini abundance 
+                    # between conditions
+                    mutate(logFC_peptides = log2(KO)-log2(WT)) 
+```
+
+We can then join the fold-changes of protein and neo-termini abundance
+into a single data frame.
+
+``` r
+log2FCpept_vs_log2FCprots <- left_join(log2FCs_proteins,
+                                       log2FCs_peptides,
+                                       by = c("Protein", 
+                                              "Gene", 
+                                              "Description"),
+                                       suffix = c("_protein", 
+                                                  "_peptide")) %>%
+                    mutate(protein_id_modif_pep = paste(Protein, 
+                                                        modified_peptide,
+                                                        sep = "_"))
+```
+
+## Scatter plot of log2-fold changes of neo-termini vs protein abundance
+
+We then generate a scatter plot of the log2-fold changes vs protein
+abundance, of the differentially abundant neo-termini that were
+identified during our differential abundance analysis.
+
+First we filter to keep only the differentially abundant neo-termini.
+
+``` r
+log2FCpept_vs_log2FCprots_1 <- log2FCpept_vs_log2FCprots %>%
+                          filter(protein_id_modif_pep %in% 
+                          KO_vs_WT_peptides_limma_table_n1_diff_feat_spec_fdr$protein_id_modif_pep)
+```
+
+… and run a correlation test to evaluate the relationship between
+differentially abundant neo-termini and protein abundance.
+
+``` r
+cor_test_res_1 <- cor.test(log2FCpept_vs_log2FCprots_1$logFC_peptides,
+                           log2FCpept_vs_log2FCprots_1$logFC_fully_tryp_protein, 
+                           method = "pearson")
+```
+
+Then we generate the scatter plot.
+
+``` r
+ggplot(log2FCpept_vs_log2FCprots_1, 
+       aes(x = logFC_fully_tryp_protein, 
+           y = logFC_peptides)) + 
+  geom_smooth(method=lm, 
+              se = FALSE, 
+              linetype="dashed", 
+              linewidth = 1, 
+              color = "black") + 
+  geom_point() +
+  annotate("text",
+           x = -0.25, 
+           y = 2.5,
+           label = paste0("Pearson's R: ", round(cor_test_res_1$estimate, 2),
+                          "\n",
+                          "p-value: ", format(cor_test_res_1$p.value, scientific = TRUE)),
+           hjust = 0, vjust = 0) +
+  xlim(-0.3, 0.3) + 
+  ylim(-3, 3) + 
+  scale_color_manual(values = c("#2a9d8f", "red")) +
+  xlab("log2(FC) - Protein abundances") + 
+  ylab("log2(FC) - Neo-termini")  +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_hline(yintercept = 0, linetype = "dashed") + 
+  theme(panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) + 
+  ggtitle(label = "Diff. abund. neo-termini vs protein abundance")
+```
+
+![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-57-1.png)
+
+With this visualization, we can then pinpoint proteolytic products that
+show a differential behavior compared to the abundance of their
+associated proteins.
+
+Specifically in this plot, we can take proteolytic products of
+Cadherin-16 and Meprin A. These show increased abundance in KO, while
+their associated proteins show decreased abundance in KO.
+
+We first filter the data frame containing the differentially abundant
+neo-termini to keep only those belonging to Cadherin-16 and Meprin A.
+
+``` r
+log2FCpept_vs_log2FCprots_mep1a_Cdh16 <- log2FCpept_vs_log2FCprots_1 %>%
+  filter(Gene %in% c("Mep1a", "Cdh16")) 
+```
+
+Then we visualize this selection.
+
+``` r
+ggplot(log2FCpept_vs_log2FCprots_1, 
+       aes(x = logFC_fully_tryp_protein, 
+           y = logFC_peptides)) + 
+  geom_smooth(method=lm, 
+              se = FALSE, 
+              linetype="dashed", 
+              linewidth = 1, 
+              color = "black") + 
+  geom_point() +
+  geom_point(
+  mapping = aes(
+                x = logFC_fully_tryp_protein, 
+                y = logFC_peptides),
+  data = log2FCpept_vs_log2FCprots_mep1a_Cdh16,
+  size = 2,
+  color = "red"
+  ) + 
+  ggrepel::geom_label_repel(data = log2FCpept_vs_log2FCprots_mep1a_Cdh16,
+                           aes(label = Gene), 
+                           size = 2.2,
+                           color = "black") +
+  annotate("text",
+           x = -0.25, 
+           y = 2.5,
+           label = paste0("Pearson's R: ", round(cor_test_res_1$estimate, 2),
+                          "\n",
+                          "p-value: ", format(cor_test_res_1$p.value, scientific = TRUE)),
+           hjust = 0, vjust = 0) +
+  xlim(-0.3, 0.3) + 
+  ylim(-3, 3) + 
+  scale_color_manual(values = c("#2a9d8f", "red")) +
+  xlab("log2(FC) - Protein abundances") + 
+  ylab("log2(FC) - Neo-termini")  +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_hline(yintercept = 0, linetype = "dashed") + 
+  theme(panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) + 
+  ggtitle(label = "Diff. abund. neo-termini vs protein abundance")
+```
+
+![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-59-1.png)
