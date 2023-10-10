@@ -46,10 +46,17 @@ get_cleave_area <- function(peptide_annotation){
                                                len_followpad = str_count(prev_10_pad),
                                                len_prevpad = str_count(following_10_pad))
 
+                     cleave_area20 <- bind_rows(nterm_semi_pepts,
+                                               cterm_semi_pepts) %>% 
+                     # generate column with descriptive cleavage site
+                     mutate(substring1 = str_sub(cleave_area20, start = 1, end = 10),
+                            substring2 = str_sub(cleave_area20, start = 11, end = 20)) %>%
+                     mutate(cleavage_site = paste(substring1, substring2, sep = " | ")) %>%
+                     mutate(short_cleavage_site = substr(cleavage_site, start = 7, stop = nchar(my_string) - 6)) %>%
+                     dplyr::select(-substring1, -substring2)
 
                     list_cleavs <- list(tab_nterm_semi_pepts = nterm_semi_pepts,
                                         tab_cterm_semi_pepts = cterm_semi_pepts,
-                                        cleave_area20 = bind_rows(nterm_semi_pepts,
-                                                                  cterm_semi_pepts))
+                                        cleave_area20 = cleave_area20)
 
 }
