@@ -52,7 +52,7 @@ get_cleave_area <- function(peptide_annotation){
                      mutate(substring1 = str_sub(cleave_area20, start = 1, end = 10),
                             substring2 = str_sub(cleave_area20, start = 11, end = 20)) %>%
                      mutate(cleavage_site = paste(substring1, substring2, sep = " | ")) %>%
-                     mutate(short_cleavage_site = substr(cleavage_site, start = 7, stop = nchar(my_string) - 6)) %>%
+                     mutate(short_cleavage_site = substr(cleavage_site, start = 7, stop = nchar(cleavage_site) - 6)) %>%
                      dplyr::select(-substring1, -substring2)
 
                     list_cleavs <- list(tab_nterm_semi_pepts = nterm_semi_pepts,
