@@ -1267,6 +1267,8 @@ dplyr::relocate(
 )
 ```
 
+... and save the results in a tab-separated file for further exploration.
+
 ```{r}
 write_tsv(
   x = limma_terminomics_prot_norm,
