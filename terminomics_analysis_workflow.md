@@ -1558,35 +1558,10 @@ dplyr::relocate(
   "protein_description", .before = modified_peptide
 ) %>% 
   filter(neo_termini_status == "neo_termini")
-
-  dim(limma_terminomics_prot_norm)
 ```
-
-    [1] 1562   27
 
 We then merge the terminomics differential abundance analyses with the
 protein-level differential abundance analysis.
-
-``` r
-names(KO_vs_WT_protein_limma)
-```
-
-    [1] "Protein"     "logFC"       "P.Value"     "adj.P.Val"   "Gene"       
-    [6] "Description" "Feature"    
-
-``` r
-names(limma_terminomics_prot_norm)
-```
-
-     [1] "protein_id_modif_pep" "protein_id"           "protein_description" 
-     [4] "modified_peptide"     "peptide"              "logFC"               
-     [7] "P.Value"              "adj.P.Val"            "Feature"             
-    [10] "Change_direction"     "neo_termini_status"   "protein_length"      
-    [13] "start_position"       "end_position"         "next_aa"             
-    [16] "nterm"                "tmt_tag"              "last_aa"             
-    [19] "aa_after"             "aa_before"            "prev_aa"             
-    [22] "fdr_correction"       "semi_type"            "is_terminal"         
-    [25] "cleavage_site"        "short_cleavage_site"  "cleave_area20"       
 
 ``` r
 merged_semis_n_proteomics <- left_join(
