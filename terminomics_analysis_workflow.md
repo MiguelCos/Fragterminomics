@@ -110,6 +110,14 @@ Miguel Cosenza-Contreras and Adrianna Seredynska
     id="toc-scatter-plot-of-log2-fold-changes-of-neo-termini-vs-protein-abundance"><span
     class="toc-section-number">16.1</span> Scatter plot of log2-fold changes
     of neo-termini vs protein abundance</a>
+- <a href="#differential-abundance-analysis-of-protein-abundance"
+  id="toc-differential-abundance-analysis-of-protein-abundance"><span
+  class="toc-section-number">17</span> Differential abundance analysis of
+  protein abundance</a>
+- <a href="#generate-tabular-summary-of-results"
+  id="toc-generate-tabular-summary-of-results"><span
+  class="toc-section-number">18</span> Generate tabular summary of
+  results</a>
 
 # Background and general description of the data analysis approach
 
@@ -442,7 +450,7 @@ ggplot(annot_counts_v2,
        fill = "Semi-specificity")
 ```
 
-![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-13-1.png)
+![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-13-1.png)
 
 # Annotation of protein termini by Uniprot-annotated processing information
 
@@ -524,7 +532,7 @@ categorized_termnini <- categorize_nterm(annotated_peptides = nterannot,
 print(categorized_termnini$ntermini_category_plot)
 ```
 
-![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-18-1.png)
+![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-18-1.png)
 
 # Quantitative analysis of Semi-specific peptides
 
@@ -682,7 +690,7 @@ ggplot(pept_summ_rawpur_semi_3,
        title = "%Tot. semis/Tot. all") 
 ```
 
-![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-23-1.png)
+![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-23-1.png)
 
 # Differential abundance analysis of semi-specific peptides (without protein-level normalization)
 
@@ -984,7 +992,7 @@ interesting_features_n1 <- features_n1 %>%
 And apply our function `feature_fdr_correction`:
 
 ``` r
-compar_tab_pept_protein_normalized_feat_fdr <- feature_fdr_correction(toptable = KO_vs_WT_pept_protein_normalized_limma,
+compar_tab_pept_protein_normalized_feat_fdr1 <- feature_fdr_correction(toptable = KO_vs_WT_pept_protein_normalized_limma,
                                               interesting_features_table = interesting_features_n1,
                                               method = "BH") %>%
   distinct()
@@ -993,7 +1001,7 @@ compar_tab_pept_protein_normalized_feat_fdr <- feature_fdr_correction(toptable =
 … and ‘decorate’ the output limma table
 
 ``` r
-compar_tab_pept_protein_normalized_feat_fdr <- compar_tab_pept_protein_normalized_feat_fdr %>%
+compar_tab_pept_protein_normalized_feat_fdr <- compar_tab_pept_protein_normalized_feat_fdr1 %>%
   left_join(.,peptide_data_n1_annotation) %>%
   mutate(index = protein_id_modif_pep) %>%
   mutate(Feature = if_else(condition = adj.P.Val < 0.05 & fdr_correction == "feature-specific",
@@ -1086,7 +1094,7 @@ cowplot::plot_grid(volcano_limma4,
                    nrow = 1)
 ```
 
-![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-46-1.png)
+![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-46-1.png)
 
 We can observe that only keep 513 proteolytic products as differentially
 abundant after normalization by protein abundance. We consider these as
@@ -1159,7 +1167,7 @@ pheatmap(upregulated_cleavage_area_counts$amino_acid_count,
         color = colorRampPalette(brewer.pal(n = 9, name = "Reds"))(100))
 ```
 
-![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-51-1.png)
+![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-51-1.png)
 
 We see that several of our up-regulated proteolytic products contain C
 or S at the P1 position.
@@ -1330,7 +1338,7 @@ ggplot(log2FCpept_vs_log2FCprots_1,
   ggtitle(label = "Diff. abund. neo-termini vs protein abundance")
 ```
 
-![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-57-1.png)
+![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-57-1.png)
 
 With this visualization, we can then pinpoint proteolytic products that
 show a differential behavior compared to the abundance of their
@@ -1392,4 +1400,212 @@ ggplot(log2FCpept_vs_log2FCprots_1,
   ggtitle(label = "Diff. abund. neo-termini vs protein abundance")
 ```
 
-![](terminomics_analysis_workflow_files/figure-commonmark/unnamed-chunk-59-1.png)
+![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-59-1.png)
+
+# Differential abundance analysis of protein abundance
+
+One of the advantages of performing analyzes of proteolytic processing
+from shotgun proteomics data (without biochemical enrichment of N-/C-
+termini) is that we can perform differential statistics of both protein
+abundance and proteolytic processing from the same dataset. After
+performing differential abundance analyses on proteolytic products, we
+now want to explore the results at the protein level.
+
+We will use the summarization of fully tryptic peptides to generate
+normalized/scaled values of protein abundance to perform our
+differential abundance analyses. The `peptide2protein_normalization`
+function allow us to do this, by defining the argument
+`summarize_by_specificicty = TRUE`.
+
+``` r
+protein_pept_prot_by_specific <- peptide2protein_normalization(peptides = purified_peptide_data$purified_pept_quant,
+                                                               annot = sample_annotation3, 
+                                                               peptide_annot = annotated_best_psms, 
+                                                               summarize_by_specificity = TRUE)
+```
+
+We start by extracting the protein abundance information from the
+`protein_normalized_peptides` object, and from data we prepare and
+experimental design matrix that can be further use for our `limma`
+analyses.
+
+``` r
+# prep df 
+protein_mat_df <- protein_pept_prot_by_specific$summarized_protein_abundance_scaled %>% 
+  dplyr::select(-matches("MT")) %>% 
+  column_to_rownames(var = "protein_id") %>% 
+  na.omit() 
+
+# transform into matrix
+protein_mat <- as.matrix(protein_mat_df)
+
+# set minimal experimental design data frame from matrix column names
+experimental_design_prot <- as.data.frame(colnames(protein_mat)) %>%
+  dplyr::mutate(sample = str_remove(colnames(protein_mat), "_prot")) %>% 
+  dplyr::mutate(condition = str_remove(sample, "[0-9]")) %>%
+  dplyr::select(sample, condition)
+
+row_data_proteins <- rownames(protein_mat)
+
+# prepare SummarizedExperiment object for protein abundances
+
+data_prot_protnorn_se_nona <- SummarizedExperiment(
+                                              assays = protein_mat,
+                                              colData = experimental_design_prot,
+                                              rowData = row_data_proteins
+                                              )
+```
+
+We then prepare the design matrix and execute the differential abundance
+analysis.
+
+``` r
+condition <- colData(data_prot_protnorn_se_nona)$condition
+
+design <- model.matrix(~ 0 + condition)
+
+rownames(design) <- rownames(colData(data_prot_protnorn_se_nona))
+
+colnames(design) <- c("KO",
+                      "WT")
+```
+
+``` r
+fit_prot <- lmFit(object = assay(data_prot_protnorn_se_nona), 
+                  design = design, 
+                  method = "robust")
+
+cont.matrix <- makeContrasts(KO_vs_WT = KO-WT,
+                             levels = design)
+
+fit_prot2 <- contrasts.fit(fit_prot, 
+                           cont.matrix)
+
+fit_prot2 <- eBayes(fit_prot2)                  
+```
+
+… and generate the `topTable` and volcano visualization with the
+comparison results.
+
+``` r
+# generate limma toptable 
+KO_vs_WT_protein_limma <- topTable(fit = fit_prot2, 
+                                           coef = "KO_vs_WT",
+                                           number = Inf, 
+                                           adjust.method = "BH") %>%
+  rownames_to_column("Protein") %>%
+  left_join(., distinct(prot2gene)) %>% 
+  mutate(Feature = case_when(
+    adj.P.Val < 0.05 ~ "Differentially abundant",
+    TRUE ~ "Not diff. abund.")) %>%
+    #exclude not interesting columns
+    dplyr::select(-c("B", "t", "AveExpr"))
+```
+
+``` r
+ggplot(KO_vs_WT_protein_limma, 
+       aes(x = logFC, 
+           y = -log10(adj.P.Val), 
+           color = Feature)) +
+  geom_point() +
+  geom_hline(yintercept = -log10(0.05), 
+             color = "red", 
+             linetype = "dashed") +
+  xlab("logFC(KO / WT)") +
+  labs(title = "Differential abundance analysis (proteins)",
+       subtitle = paste("Differentially abundant proteins = ", sum(KO_vs_WT_protein_limma$Feature == "Differentially abundant"))) +
+  scale_color_manual(values = c("red", "grey")) + 
+  theme(legend.position = "bottom")
+```
+
+![](terminomics_analysis_workflow_files/figure-gfm/unnamed-chunk-65-1.png)
+
+# Generate tabular summary of results
+
+As a way to explore the results of the differential abundance analysis
+of proteolytic processing in the context of the context of protein
+abundance, we will generate a tabular summary of the results.
+
+We start by generating cleavage area annotations from the idenfied
+semi-specific peptides, and merge it with differential abundance
+analysis results from proteolytic products.
+
+``` r
+clevage_areas_semi_pepts <- get_cleave_area(annotated_peptides)$cleave_area20 %>% 
+  # select interesting features/columns
+  dplyr::select(
+    protein_id, protein_description, peptide = Peptide, semi_type, is_terminal,
+    cleavage_site, short_cleavage_site, cleave_area20
+  )
+
+# get interesting features from limma terminomics Results
+limma_terminomics_summary <- compar_tab_pept_protein_normalized_feat_fdr %>%
+  # select interesting features/columns
+  dplyr::select(
+    protein_id_modif_pep, protein_id, modified_peptide, peptide, 
+    logFC, P.Value, adj.P.Val, Feature, Change_direction, neo_termini_status,protein_length, start_position, end_position, 
+    next_aa, nterm, tmt_tag, last_aa, aa_after, aa_before, prev_aa,
+    neo_termini_status, fdr_correction
+  ) 
+
+# merge limma terminomics results with cleavage area annotations
+limma_terminomics_prot_norm <- left_join(
+  limma_terminomics_summary,
+  clevage_areas_semi_pepts,
+) %>%
+distinct() %>%
+dplyr::relocate(
+  "protein_description", .before = modified_peptide
+) %>% 
+  filter(neo_termini_status == "neo_termini")
+
+  dim(limma_terminomics_prot_norm)
+```
+
+    [1] 1562   27
+
+We then merge the terminomics differential abundance analyses with the
+protein-level differential abundance analysis.
+
+``` r
+names(KO_vs_WT_protein_limma)
+```
+
+    [1] "Protein"     "logFC"       "P.Value"     "adj.P.Val"   "Gene"       
+    [6] "Description" "Feature"    
+
+``` r
+names(limma_terminomics_prot_norm)
+```
+
+     [1] "protein_id_modif_pep" "protein_id"           "protein_description" 
+     [4] "modified_peptide"     "peptide"              "logFC"               
+     [7] "P.Value"              "adj.P.Val"            "Feature"             
+    [10] "Change_direction"     "neo_termini_status"   "protein_length"      
+    [13] "start_position"       "end_position"         "next_aa"             
+    [16] "nterm"                "tmt_tag"              "last_aa"             
+    [19] "aa_after"             "aa_before"            "prev_aa"             
+    [22] "fdr_correction"       "semi_type"            "is_terminal"         
+    [25] "cleavage_site"        "short_cleavage_site"  "cleave_area20"       
+
+``` r
+merged_semis_n_proteomics <- left_join(
+  limma_terminomics_prot_norm,
+  KO_vs_WT_protein_limma,
+  by = c("protein_id" = "Protein",
+         "protein_description" = "Description" ),
+  suffix = c("_terminome", "_proteome")
+) %>%
+dplyr::relocate(
+  Gene, .after = protein_id
+)
+```
+
+… and save the results in a tab-separated file for further exploration.
+
+``` r
+write_tsv(
+  x = limma_terminomics_prot_norm,
+  file = here("report/outputs/limma_merged_terminomics_and_proteomics.tsv")
+)
+```
